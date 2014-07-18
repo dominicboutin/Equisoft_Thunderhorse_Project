@@ -1,0 +1,12 @@
+[submodule "provisions/puppet/modules/mysql"]
+	path = provisions/puppet/modules/mysql
+	url = https://github.com/puppetlabs/puppetlabs-mysql.git
+[submodule "provisions/puppet/modules/phpmyadmin"]
+	path = provisions/puppet/modules/phpmyadmin
+	url = https://github.com/velaluqa/puppet-phpmyadmin
+[submodule "provisions/puppet/modules/composer"]
+	path = provisions/puppet/modules/composer
+	url = https://github.com/tPl0ch/puppet-composer.git
+[submodule "provisions/puppet/modules/git"]
+	path = provisions/puppet/modules/git
+	url = https://github.com/puppetlabs/puppetlabs-git.git
