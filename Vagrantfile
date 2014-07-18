@@ -10,14 +10,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.ssh.username = 'vagrant'
 
-  config.vm.provision :shell do |s|
-    s.path = "provisions/shell/flush-iptables.sh"
-  end
-
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "provisions/puppet"
     puppet.manifest_file = "manifest.pp"
     puppet.module_path = "provisions/puppet/modules"
+  end
+
+  config.vm.provision :shell do |s|
+    s.path = "provisions/shell/flush-iptables.sh"
   end
 
 end

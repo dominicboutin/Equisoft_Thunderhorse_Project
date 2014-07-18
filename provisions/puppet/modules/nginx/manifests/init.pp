@@ -17,7 +17,7 @@ class nginx {
 	# Make sure that the nginx service is running
 	service { 'nginx':
 		ensure => running,
-		require => Package['nginx'],
+		require => Package['nginx']
 	}
 
 	# Add vhost template

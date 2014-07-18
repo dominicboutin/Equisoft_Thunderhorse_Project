@@ -4,4 +4,4 @@
 	  target  => '/vagrant/src',
 	}
 
-include nginx, php
+include php, nginx
