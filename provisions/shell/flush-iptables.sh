@@ -1,1 +1,1 @@
-sudo iptables --flush
+iptables --flush

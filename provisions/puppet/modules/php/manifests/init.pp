@@ -1,6 +1,6 @@
 class php {
 
-	package { ['php-fpm', 'php-xml']:
+	package { ['php-fpm', 'php-xml', 'php-mysql', 'php-mbstring']:
 	  ensure => present,
 	}
 
@@ -9,7 +9,9 @@ class php {
         command => 'sed -i \'s/^[; ]*date.timezone =.*/date.timezone = America\/New_York/g\' /etc/php.ini',
         onlyif => 'test "`php -c /etc/php.ini -r \"echo ini_get(\'date.timezone\');\"`" = ""',
         require => Package['php-fpm'],
-        notify => Service['php-fpm']
+        notify => Service['php-fpm'],
+		subscribe   => Package["php-fpm"],
+		refreshonly => true
     }
 
 	file { 'php-fpm-set-session-dir':
@@ -21,7 +23,7 @@ class php {
 
 	service { 'php-fpm':
 	  ensure => running,
-	  require => Package['php-fpm', 'php-xml'],
+	  require => Package['php-fpm', 'php-xml', 'php-mysql', 'php-mbstring'],
       notify => Service['nginx']
 	}
 }
