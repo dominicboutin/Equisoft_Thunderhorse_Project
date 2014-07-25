@@ -28,6 +28,14 @@ class nginx {
 	    source => 'puppet:///modules/nginx/ciin.conf',
 	}
 
+	file { 'phpmyadmin-nginx' :
+	    path => '/etc/nginx/conf.d/phpmyadmin.conf',
+	    ensure => file,
+	    source => 'puppet:///modules/nginx/phpmyadmin.conf',
+	    require => Package['nginx'],
+	    notify	=> Service['nginx'],
+	}
+
 	# Disable default nginx vhost
 	file { 'default-nginx-disable':
 	    path => '/etc/nginx/conf.d/default.conf',

@@ -1,6 +1,6 @@
 [submodule "provisions/puppet/modules/mysql"]
 	path = provisions/puppet/modules/mysql
-url=https://github.com/dominicboutin/puppetlabs-mysql.git
+url=https://github.com/puppetlabs/puppetlabs-mysql.git
 [submodule "provisions/puppet/modules/phpmyadmin"]
 	path = provisions/puppet/modules/phpmyadmin
 	url = https://github.com/velaluqa/puppet-phpmyadmin
@@ -19,3 +19,12 @@ url=https://github.com/dominicboutin/puppetlabs-mysql.git
 [submodule "provisions/puppet/modules/epel"]
 	path = provisions/puppet/modules/epel
 	url = https://github.com/stahnma/puppet-module-epel.git
+[submodule "provisions/puppet/modules/puppi"]
+	path = provisions/puppet/modules/puppi
+	url = https://github.com/example42/puppi.git
+[submodule "provisions/puppet/modules/php"]
+	path = provisions/puppet/modules/php
+	url = https://github.com/example42/puppet-php.git
+[submodule "provisions/puppet/modules/inifile"]
+	path = provisions/puppet/modules/inifile
+	url = https://github.com/puppetlabs/puppetlabs-inifile.git
