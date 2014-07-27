@@ -17,6 +17,7 @@ class nginx {
 	# Make sure that the nginx service is running
 	service { 'nginx':
 		ensure => running,
+		enable => true,
 		require => Package['nginx']
 	}
 
@@ -24,8 +25,9 @@ class nginx {
 	file { 'vagrant-nginx':
 	    path => '/etc/nginx/conf.d/ciin.conf',
 	    ensure => file,
-	    require => Package['nginx'],
 	    source => 'puppet:///modules/nginx/ciin.conf',
+	    require => Package['nginx'],
+	    notify	=> Service['nginx'],
 	}
 
 	file { 'phpmyadmin-nginx' :

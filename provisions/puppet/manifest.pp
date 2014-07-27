@@ -45,17 +45,40 @@ class { 'php':
   service_autorestart => true,
 }
 
+ini_setting { "php-setting-timezone":
+  ensure  => present,
+  path    => '/etc/php.ini',
+  section => 'Date',
+  setting => 'date.timezone',
+  value   => 'America/Montreal',
+  require => Class['php'],
+  notify  => Service['php-fpm'],
+}
+
+ini_setting { "php-setting-displayerrors":
+  ensure  => present,
+  path    => '/etc/php.ini',
+  section => 'PHP',
+  setting => 'display_errors',
+  value   => 'On',
+  require => Class['php'],
+  notify  => Service['php-fpm'],
+}
+
 php::module { "fpm": }
 php::module { "xml": }
 php::module { "mysql": }
 php::module { "mbstring": }
 php::pecl::module { "pecl-zendopcache": 
-	require => Yumrepo['epel']
+	service => 'nginx',
+	service_autorestart => true,
+	require => Yumrepo['epel'],
 }
 
-service { 'php-run' :
+service { 'php-fpm' :
 	name => 'php-fpm',
 	ensure => 'running',
+	enable => true,
 	require => Package['php'],
 	notify => Service['nginx']
 }
