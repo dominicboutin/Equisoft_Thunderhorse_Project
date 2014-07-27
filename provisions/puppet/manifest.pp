@@ -115,20 +115,21 @@ class { 'composer' :
 
 ###### MySQL module - https://forge.puppetlabs.com/puppetlabs/mysql ######
 
-#$users = {
-#  'devuser@localhost' => {
-#    ensure                   => 'present',
-#    max_connections_per_hour => '0',
-#    max_queries_per_hour     => '0',
-#    max_updates_per_hour     => '0',
-#    max_user_connections     => '0',
-#    password_hash            => '*F3A2A51A9B0F2BE2468926B4132313728C250DBF',
-#  },
-#}
+$users = {
+	'devuser@localhost' => {
+    ensure                   => 'present',
+    max_connections_per_hour => '0',
+    max_queries_per_hour     => '0',
+    max_updates_per_hour     => '0',
+    max_user_connections     => '0',
+    password_hash            => '*D7F685475BE8D76672B4E15962BB085F55726E4B',
+  },
+}
 
 class { '::mysql::server' :
   	root_password   => 'devuser',
-  	#users           => $users,
+  	users           => $users,
+  	service_enabled => true,
 }
 
 
@@ -140,7 +141,7 @@ class { 'phpmyadmin':
 	servers => [
 		{
 			desc => "local",
-			host => "127.0.0.1",
+			host => "localhost",
 		},
 		{
 			desc => "dev",
