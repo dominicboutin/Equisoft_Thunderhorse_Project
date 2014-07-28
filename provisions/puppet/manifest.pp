@@ -1,8 +1,13 @@
+# Not sure what it changes but we don't have a warning if we set allow_virtual
 Package {  allow_virtual => false, }
 
+# Set path as provider by default for Exec so we don't have to specify it everytime
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
 
+# Set git as provider by default for Vcsrepo so we don't have to specify it everytime
 Vcsrepo { provider => git } 
+
+##### users & groups section ####
 
 group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
@@ -22,6 +27,9 @@ user { ['apache', 'nginx', 'httpd', 'www-data']:
   groups => 'www-data',
   require => Group['www-data']
 }
+
+
+##### file structure section #####
 
 file { '/srv/ciin':
 	ensure  => 'link',
