@@ -13,10 +13,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.ssh.username = 'vagrant'
 
-  config.vm.synced_folder ".", "/vagrant",
-    :group => "www-data",
-    :mount_options => ["dmode=775","fmode=775"]
-
   config.vm.provider "virtualbox" do |v|
     v.name = "CIIN"  
     #v.memory = 1024
@@ -33,6 +29,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :shell do |s|
     s.path = "provisions/shell/flush-iptables.sh"
+    s.privileged = true
+  end
+
+  config.vm.provision :shell do |s|
+    s.path = "provisions/shell/bootstrap-post.sh"
     s.privileged = true
   end
 
