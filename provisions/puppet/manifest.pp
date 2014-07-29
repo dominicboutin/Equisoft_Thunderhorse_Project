@@ -138,9 +138,9 @@ include nginx
 ###### Project section ######
 
 vcsrepo { '/srv/ciin':
-  ensure   => latest,
+  ensure   => present,
   source   => 'git://github.com/EquisoftDev/Equisoft_Thunderhorse_Project.git',
-  owner    => 'www-data',
+  owner    => 'vagrant',
   group    => 'www-data',
 }
 
@@ -203,7 +203,7 @@ class { '::mysql::server' :
 vcsrepo { '/srv/webgrind':
   ensure   => latest,
   source   => 'git://github.com/jokkedk/webgrind.git',
-  owner    => 'www-data',
+  owner    => 'vagrant',
   group    => 'www-data',
 }
 
