@@ -1,3 +1,15 @@
+# EPEL module - https://forge.puppetlabs.com/stahnma/epel
+include epel
+
+# Git module - https://forge.puppetlabs.com/puppetlabs/git
+include git
+
+# Composer module - https://forge.puppetlabs.com/tPl0ch/composer
+#class { 'composer' :
+#	download_method => 'wget',
+#}
+include composer
+
 # Not sure what it changes but we don't have a warning if we set allow_virtual
 Package {  allow_virtual => false, }
 
@@ -7,7 +19,7 @@ Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
 # Set git as provider by default for Vcsrepo so we don't have to specify it everytime
 Vcsrepo { provider => git } 
 
-##### users & groups section ####
+##### Users & groups section ####
 
 group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
@@ -29,12 +41,12 @@ user { ['apache', 'nginx', 'httpd', 'www-data']:
 }
 
 
-##### file structure section #####
+##### File structure section #####
 
-file { '/srv/ciin':
-	ensure  => 'link',
-	target  => '/vagrant/src',
-}
+#file { '/srv/ciin':
+#	ensure  => 'link',
+#	target  => '/vagrant/src',
+#}
 
 file { '/var/www':
 	ensure  => 'link',
@@ -42,16 +54,29 @@ file { '/var/www':
 }
 
 
-###### EPEL module - https://forge.puppetlabs.com/stahnma/epel ######
+###### PHP section #####
 
-include epel
-
-###### PHP module - https://forge.puppetlabs.com/example42/php #####
-
+# PHP module - https://forge.puppetlabs.com/example42/php
 class { 'php':
   service => 'nginx',
   service_autorestart => true,
 }
+
+php::module { "fpm": }
+php::module { "xml": }
+php::module { "mysql": }
+php::module { "mbstring": }
+php::pecl::module { "pecl-zendopcache": 
+	service => 'nginx',
+	service_autorestart => true,
+	require => Yumrepo['epel'],
+}
+php::pecl::module { "pecl-xdebug": 
+	service => 'nginx',
+	service_autorestart => true,
+	require => Yumrepo['epel'],
+}
+
 
 ini_setting { "php-setting-timezone":
   ensure  => present,
@@ -73,14 +98,28 @@ ini_setting { "php-setting-displayerrors":
   notify  => Service['php-fpm'],
 }
 
-php::module { "fpm": }
-php::module { "xml": }
-php::module { "mysql": }
-php::module { "mbstring": }
-php::pecl::module { "pecl-zendopcache": 
-	service => 'nginx',
-	service_autorestart => true,
-	require => Yumrepo['epel'],
+ini_setting { "php-fpm-setting-user":
+  ensure  => present,
+  path    => '/etc/php-fpm.d/www.conf',
+  section => 'www',
+  setting => 'user',
+  value   => 'www-data',
+  require => Php::Module['fpm'],
+  notify  => Service['php-fpm'],
+}
+
+ini_setting { "php-fpm-setting-group":
+  ensure  => present,
+  path    => '/etc/php-fpm.d/www.conf',
+  section => 'www',
+  setting => 'group',
+  value   => 'www-data',
+  require => Php::Module['fpm'],
+  notify  => Service['php-fpm'],
+}
+
+class { 'xdebug::settings' :
+	require => Php::Pecl::Module['pecl-xdebug']
 }
 
 service { 'php-fpm' :
@@ -91,20 +130,18 @@ service { 'php-fpm' :
 	notify => Service['nginx']
 }
 
-###### nginx module ######
+###### NGINX section ######
 
 include nginx
 
 
-###### Git module - https://forge.puppetlabs.com/puppetlabs/git ######
+###### Project section ######
 
-include git
-
-
-###### Composer module - https://forge.puppetlabs.com/tPl0ch/composer ######
-
-class { 'composer' :
-	download_method => 'wget',
+vcsrepo { '/srv/ciin':
+  ensure   => latest,
+  source   => 'git://github.com/EquisoftDev/Equisoft_Thunderhorse_Project.git',
+  owner    => 'www-data',
+  group    => 'www-data',
 }
 
 #composer::exec { 'project-install':
@@ -120,8 +157,7 @@ class { 'composer' :
     #dev                  => true, # Install dev dependencies
 #}
 
-
-###### MySQL module - https://forge.puppetlabs.com/puppetlabs/mysql ######
+###### Database section ######
 
 $users = {
 	'devuser@localhost' => {
@@ -134,6 +170,7 @@ $users = {
   },
 }
 
+# MySQL module - https://forge.puppetlabs.com/puppetlabs/mysql
 class { '::mysql::server' :
   	root_password   => 'devuser',
   	users           => $users,
@@ -141,20 +178,66 @@ class { '::mysql::server' :
 }
 
 
-###### phpMyAdmin module - https://forge.puppetlabs.com/leoc/phpmyadmin ######
+###### phpMyAdmin section ######
 
-class { 'phpmyadmin':
-	path => "/srv/phpmyadmin",
-	user => "root",
-	servers => [
-		{
-			desc => "local",
-			host => "localhost",
-		},
-		{
-			desc => "dev",
-			host => "EquiDevMySQL",
-		}
-	],
-	require => Package['git']
+# phpMyAdmin module - https://forge.puppetlabs.com/leoc/phpmyadmin
+#class { 'phpmyadmin':
+#	path => "/srv/phpmyadmin",
+#	user => "root",
+#	servers => [
+#		{
+#			desc => "local",
+#			host => "localhost",
+#		},
+#		{
+#			desc => "dev",
+#			host => "EquiDevMySQL",
+#		}
+#	],
+#	require => Package['git']
+#}
+
+
+###### Webgrind section ######
+
+vcsrepo { '/srv/webgrind':
+  ensure   => latest,
+  source   => 'git://github.com/jokkedk/webgrind.git',
+  owner    => 'www-data',
+  group    => 'www-data',
+}
+
+###### Misc section ######
+
+class xdebug::settings {
+
+	ini_setting { "php-xdebug-idekey":
+		ensure  => present,
+		path    => '/etc/php.d/xdebug.ini',
+		section => '',
+		setting => 'xdebug.idekey',
+		value   => 'PHPSTORM',
+		require => Package['php-pecl-xdebug'],
+		notify  => Service['php-fpm'],
+	}
+
+	ini_setting { "php-xdebug-remote_enable":
+		ensure  => present,
+		path    => '/etc/php.d/xdebug.ini',
+		section => '',
+		setting => 'xdebug.remote_enable',
+		value   => '1',
+		require => Package['php-pecl-xdebug'],
+		notify  => Service['php-fpm'],
+	}
+
+	ini_setting { "php-xdebug-remote_connect_back":
+		ensure  => present,
+		path    => '/etc/php.d/xdebug.ini',
+		section => '',
+		setting => 'xdebug.remote_connect_back',
+		value   => '1',
+		require => Package['php-pecl-xdebug'],
+		notify  => Service['php-fpm'],
+	}
 }

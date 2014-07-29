@@ -2,7 +2,7 @@ class nginx {
 
 	# Add nginx yum repo
 	yumrepo { "nginx":
-		baseurl => 'http://nginx.org/packages/mainline/centos/7/$basearch/',
+		baseurl => 'http://nginx.org/packages/centos/6/$basearch/',
 		descr => "nginx repo",
 		enabled => 1,
 		gpgcheck => 0

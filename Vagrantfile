@@ -2,8 +2,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "hfm4/centos7"
-  config.vm.box_version = "1.1"
+  config.vm.box = "puppetlabs/centos-6.5-64-puppet"
 
   config.vm.network "forwarded_port", guest: 80, host: 8081, auto_correct: true
   config.vm.network "forwarded_port", guest: 8080, host: 8082, auto_correct: true
