@@ -5,9 +5,9 @@ include epel
 include git
 
 # Composer module - https://forge.puppetlabs.com/tPl0ch/composer
-#class { 'composer' :
-#	download_method => 'wget',
-#}
+class { 'composer' :
+	download_method => 'wget',
+}
 include composer
 
 # Not sure what it changes but we don't have a warning if we set allow_virtual
@@ -41,25 +41,19 @@ user { ['apache', 'nginx', 'httpd', 'www-data']:
 }
 
 
-##### File structure section #####
-
-#file { '/srv/ciin':
-#	ensure  => 'link',
-#	target  => '/vagrant/src',
-#}
-
-file { '/var/www':
-	ensure  => 'link',
-	target  => '/vagrant/src/web'
-}
-
-
 ###### PHP section #####
 
 # PHP module - https://forge.puppetlabs.com/example42/php
 class { 'php':
   service => 'nginx',
   service_autorestart => true,
+}
+
+file { '/var/lib/php/session':
+  ensure  => directory,
+  owner   => 'www-data',
+  group   => 'www-data',
+  require => Class['php'],
 }
 
 php::module { "fpm": }
@@ -77,7 +71,6 @@ php::pecl::module { "pecl-xdebug":
 	require => Yumrepo['epel'],
 }
 
-
 ini_setting { "php-setting-timezone":
   ensure  => present,
   path    => '/etc/php.ini',
@@ -88,7 +81,7 @@ ini_setting { "php-setting-timezone":
   notify  => Service['php-fpm'],
 }
 
-ini_setting { "php-setting-displayerrors":
+ini_setting { "php-setting-display_errors":
   ensure  => present,
   path    => '/etc/php.ini',
   section => 'PHP',
@@ -142,20 +135,21 @@ vcsrepo { '/srv/ciin':
   source   => 'git://github.com/EquisoftDev/Equisoft_Thunderhorse_Project.git',
   owner    => 'vagrant',
   group    => 'www-data',
+  notify   => File['/srv/ciin'],
 }
 
-#composer::exec { 'project-install':
-#    cmd                  => 'install',  # REQUIRED
-#    cwd                  => '/vagrant/src', # REQUIRED
-    #prefer_source        => false,
-    #prefer_dist          => false,
-    #dry_run              => false, # Just simulate actions
-    #custom_installers    => false, # No custom installers
-    #scripts              => false, # No script execution
-    #interaction          => false, # No interactive questions
-    #optimize             => false, # Optimize autoloader
-    #dev                  => true, # Install dev dependencies
-#}
+# TODO - Only set the folders that need a write permission
+file { '/srv/ciin':
+  ensure  => directory,
+  mode    => 'g+w',
+  recurse => true,
+}
+
+composer::exec { 'project-install':
+    cmd                  => 'install',
+    cwd                  => '/srv/ciin/src',
+    optimize             => true, # Optimize autoloader
+}
 
 ###### Database section ######
 
