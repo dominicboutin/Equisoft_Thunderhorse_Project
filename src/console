@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+define( 'PATH_ROOT', dirname( __DIR__ ). '/src' );
+define( 'PATH_SRC', PATH_ROOT . '/src' );
+
 require_once __DIR__.'/vendor/autoload.php';
 
 $app = new Silex\Application();

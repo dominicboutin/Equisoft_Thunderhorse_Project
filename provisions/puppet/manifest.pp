@@ -8,7 +8,6 @@ include git
 class { 'composer' :
 	download_method => 'wget',
 }
-include composer
 
 # Not sure what it changes but we don't have a warning if we set allow_virtual
 Package {  allow_virtual => false, }
