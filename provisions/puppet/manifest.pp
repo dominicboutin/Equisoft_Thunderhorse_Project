@@ -13,7 +13,7 @@ class { 'composer' :
 Package {  allow_virtual => false, }
 
 # Set path as provider by default for Exec so we don't have to specify it everytime
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ] }
 
 # Set git as provider by default for Vcsrepo so we don't have to specify it everytime
 Vcsrepo { provider => git } 
@@ -39,35 +39,56 @@ user { ['apache', 'nginx', 'httpd', 'www-data']:
   require => Group['www-data']
 }
 
+##### SSH section #####
+
+# Make sure the sftp subsystem point to the right place
+file_line { 'update-sshd_config':
+  path  => '/etc/ssh/sshd_config',
+  line  => 'Subsystem sftp /usr/libexec/openssh/sftp-server',
+  match => '^Subsystem sftp',
+}
+
 
 ###### PHP section #####
 
-# PHP module - https://forge.puppetlabs.com/example42/php
-class { 'php':
-  service => 'nginx',
-  service_autorestart => true,
+exec { 'install-remi-repo':
+  cwd         => '/etc/yum.repos.d',
+  command     => 'wget http://rpms.famillecollet.com/enterprise/remi.repo',
+  onlyif      => '[ -f /etc/yum.repos.d/remi.repo ]',
+}
+
+yumrepo { 'remi':
+  baseurl  => 'http://rpms.famillecollet.com/enterprise/$releasever/remi/$basearch/',
+  enabled  => 1,
+  gpgcheck => 1,
+  gpgkey   => 'http://rpms.famillecollet.com/RPM-GPG-KEY-remi',
+}
+
+yumrepo { 'remi-php56':
+  baseurl  => 'http://rpms.famillecollet.com/enterprise/$releasever/php55/$basearch/',
+  enabled  => 1,
+  gpgcheck => 1,
+  gpgkey   => 'http://rpms.famillecollet.com/RPM-GPG-KEY-remi',
+  require  => Yumrepo['remi'],
+}
+
+package { 'php':
+  ensure  => present,
+  require => [ Yumrepo['remi'], Yumrepo['remi-php56'] ],
 }
 
 file { '/var/lib/php/session':
   ensure  => directory,
   owner   => 'www-data',
   group   => 'www-data',
-  require => Class['php'],
+  require => [ Package['php'], Package['php-fpm'] ],
 }
 
-php::module { "fpm": }
-php::module { "xml": }
-php::module { "mysql": }
-php::module { "mbstring": }
-php::pecl::module { "pecl-zendopcache": 
-	service => 'nginx',
-	service_autorestart => true,
-	require => Yumrepo['epel'],
-}
-php::pecl::module { "pecl-xdebug": 
-	service => 'nginx',
-	service_autorestart => true,
-	require => Yumrepo['epel'],
+$phpModules = ['php-fpm', 'php-xml', 'php-mysql', 'php-mbstring', 'php-pecl-zendopcache', 'php-pecl-xdebug']
+package { $phpModules:
+  ensure  => present,
+  require => Package['php'],
+  notify  => Service['php-fpm'],
 }
 
 ini_setting { "php-setting-timezone":
@@ -76,7 +97,7 @@ ini_setting { "php-setting-timezone":
   section => 'Date',
   setting => 'date.timezone',
   value   => 'America/Montreal',
-  require => Class['php'],
+  require => Package['php'],
   notify  => Service['php-fpm'],
 }
 
@@ -86,7 +107,7 @@ ini_setting { "php-setting-display_errors":
   section => 'PHP',
   setting => 'display_errors',
   value   => 'On',
-  require => Class['php'],
+  require => Package['php'],
   notify  => Service['php-fpm'],
 }
 
@@ -96,7 +117,7 @@ ini_setting { "php-fpm-setting-user":
   section => 'www',
   setting => 'user',
   value   => 'www-data',
-  require => Php::Module['fpm'],
+  require => Package['php-fpm'],
   notify  => Service['php-fpm'],
 }
 
@@ -106,20 +127,19 @@ ini_setting { "php-fpm-setting-group":
   section => 'www',
   setting => 'group',
   value   => 'www-data',
-  require => Php::Module['fpm'],
+  require => Package['php-fpm'],
   notify  => Service['php-fpm'],
 }
 
 class { 'xdebug::settings' :
-	require => Php::Pecl::Module['pecl-xdebug']
+  require => Package['php-pecl-xdebug']
 }
 
 service { 'php-fpm' :
-	name => 'php-fpm',
-	ensure => 'running',
-	enable => true,
-	require => Package['php'],
-	notify => Service['nginx']
+  name => 'php-fpm',
+  ensure => 'running',
+  enable => true,
+  require => Package['php-fpm'],
 }
 
 ###### NGINX section ######
@@ -132,22 +152,14 @@ include nginx
 vcsrepo { '/srv/ciin':
   ensure   => present,
   source   => 'git://github.com/EquisoftDev/Equisoft_Thunderhorse_Project.git',
-  owner    => 'vagrant',
+  owner    => 'www-data',
   group    => 'www-data',
-  notify   => File['/srv/ciin'],
 }
 
-# TODO - Only set the folders that need a write permission
-file { '/srv/ciin':
-  ensure  => directory,
-  mode    => 'g+w',
-  recurse => true,
-}
-
-composer::exec { 'project-install':
-    cmd                  => 'install',
-    cwd                  => '/srv/ciin/src',
-    optimize             => true, # Optimize autoloader
+exec { 'project-install':
+  command     => 'sudo -u www-data /usr/local/bin/composer --prefer-source -n -q  install',
+  cwd         => '/srv/ciin/src',
+  require     => [ Class['composer'], Vcsrepo['/srv/ciin'] ],
 }
 
 ###### Database section ######
@@ -206,7 +218,7 @@ class xdebug::settings {
 
 	ini_setting { "php-xdebug-idekey":
 		ensure  => present,
-		path    => '/etc/php.d/xdebug.ini',
+		path    => '/etc/php.d/15-xdebug.ini',
 		section => '',
 		setting => 'xdebug.idekey',
 		value   => 'PHPSTORM',
@@ -216,7 +228,7 @@ class xdebug::settings {
 
 	ini_setting { "php-xdebug-remote_enable":
 		ensure  => present,
-		path    => '/etc/php.d/xdebug.ini',
+		path    => '/etc/php.d/15-xdebug.ini',
 		section => '',
 		setting => 'xdebug.remote_enable',
 		value   => '1',
@@ -226,7 +238,7 @@ class xdebug::settings {
 
 	ini_setting { "php-xdebug-remote_connect_back":
 		ensure  => present,
-		path    => '/etc/php.d/xdebug.ini',
+		path    => '/etc/php.d/15-xdebug.ini',
 		section => '',
 		setting => 'xdebug.remote_connect_back',
 		value   => '1',
