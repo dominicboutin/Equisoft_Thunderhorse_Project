@@ -70,7 +70,7 @@ yumrepo { 'remi':
 }
 
 yumrepo { 'remi-php56':
-  baseurl  => 'http://rpms.famillecollet.com/enterprise/$releasever/php55/$basearch/',
+  baseurl  => 'http://rpms.famillecollet.com/enterprise/$releasever/php56/$basearch/',
   enabled  => 1,
   gpgcheck => 1,
   gpgkey   => 'http://rpms.famillecollet.com/RPM-GPG-KEY-remi',
