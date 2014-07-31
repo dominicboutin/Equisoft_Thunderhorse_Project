@@ -54,7 +54,7 @@ file_line { 'update-sshd_config':
 exec { 'install-remi-repo':
   cwd         => '/etc/yum.repos.d',
   command     => 'wget http://rpms.famillecollet.com/enterprise/remi.repo',
-  onlyif      => '[ -f /etc/yum.repos.d/remi.repo ]',
+  unless      => '[ -f /etc/yum.repos.d/remi.repo ]',
 }
 
 yumrepo { 'remi':
