@@ -43,11 +43,16 @@ user { ['apache', 'nginx', 'httpd', 'www-data']:
 
 # Make sure the sftp subsystem point to the right place
 file_line { 'update-sshd_config':
-  path  => '/etc/ssh/sshd_config',
-  line  => 'Subsystem sftp /usr/libexec/openssh/sftp-server',
-  match => '^Subsystem sftp',
+  path   => '/etc/ssh/sshd_config',
+  line   => 'Subsystem sftp /usr/libexec/openssh/sftp-server',
+  match  => '^Subsystem sftp',
+  notify => Service['sshd']
 }
 
+service { 'sshd':
+  ensure => 'running',
+  enable => true,
+}
 
 ###### PHP section #####
 
