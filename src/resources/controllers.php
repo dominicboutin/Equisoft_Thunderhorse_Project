@@ -119,25 +119,6 @@ $app->match('/doctrine', function () use ($app) {
         // ->getForm()
     // ;
 
-    // $form->handleRequest($request);
-    // if ($form->isSubmitted()) {
-        // if ($form->isValid()) {
-            // $app['session']->getFlashBag()->add('success', 'The form is valid');
-        // } else {
-            // $form->addError(new FormError('This is a global error'));
-            // $app['session']->getFlashBag()->add('info', 'The form is bound, but not valid');
-        // }
-    // }
-
-    // return $app['twig']->render('form.html.twig', array('form' => $form->createView()));
-// })->bind('form');
-
-// $app->match('/logout', function () use ($app) {
-    // $app['session']->clear();
-
-    // return $app->redirect($app['url_generator']->generate('homepage'));
-// })->bind('logout');
-
 $app->get('/page-with-cache', function () use ($app) {
     $response = new Response($app['twig']->render('page-with-cache.html.twig', array('date' => date('Y-M-d h:i:s'))));
     $response->setTtl(10);
