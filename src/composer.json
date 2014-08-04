@@ -42,9 +42,9 @@
     },
     "autoload": {
         "psr-0": {
-            "SKE\\": "src/",
-			"Controller\\": "src/",
-			"Service\\": "src/"
+            "SKE\\": "resources/",
+			"Controller\\": "resources/",
+			"Service\\": "resources/"
         }
     }	
 }

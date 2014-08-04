@@ -1,6 +1,12 @@
 <?php
 define( 'PATH_ROOT', dirname( __DIR__ ) );
-define( 'PATH_SRC', PATH_ROOT . '/src' );
+define( 'PATH_SRC', PATH_ROOT . '/resources' );
+
+define( 'PATH_CACHE', PATH_SRC . '/cache' );
+define( 'PATH_LOCALES', PATH_SRC . '/locales' );
+
+define( 'PATH_PUBLIC', PATH_ROOT . '/web' );
+define( 'PATH_VENDOR', PATH_ROOT  );
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -11,16 +17,17 @@ switch (strtolower($_SERVER["SERVER_NAME"])) {
     case "localhost.silex.poc.equisoft.com":
         // Load Dev Config
         Symfony\Component\Debug\Debug::enable();
-        require __DIR__.'/../resources/config/dev.php';
+        require PATH_SRC.'/config/dev.php';
         break;
+
     case "silex.poc.equisoft.com":
         // Load Prod Config
-        require __DIR__.'/../resources/config/prod.php';
+        require PATH_SRC.'/config/prod.php';
         break;
 }
 
-require __DIR__.'/../src/app.php';
+require PATH_SRC . '/app.php';
 
-require __DIR__.'/../src/controllers.php';
+require PATH_SRC . '/controllers.php';
 
 $app['http_cache']->run();
