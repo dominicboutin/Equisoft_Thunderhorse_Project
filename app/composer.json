@@ -42,9 +42,13 @@
     },
     "autoload": {
         "psr-0": {
-            "SKE\\": "resources/",
-			"Controller\\": "resources/",
-			"Service\\": "resources/"
+            "SKE\\": "src/"
+        },
+        "psr-4": {
+            "CIIN\\Controller\\": "src/Controller/",
+            "CIIN\\Model\\": "src/Model/",
+            "CIIN\\Service\\": "src/Service/",
+            "CIIN\\": "src/modules"
         }
     }	
 }

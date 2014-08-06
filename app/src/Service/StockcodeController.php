@@ -1,5 +1,5 @@
 <?php
-namespace Service
+namespace CIIN\Service
 {
 	use Symfony\Component\HttpFoundation\Request;
 	use Symfony\Component\HttpFoundation\Response;
