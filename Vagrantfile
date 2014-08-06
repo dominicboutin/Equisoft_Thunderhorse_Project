@@ -12,10 +12,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.name = "CIIN"  
-    #v.memory = 1024
-    #v.cpus = 2
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    v.customize ["modifyvm", :id, "--memory", "1024"]
+    v.customize ["modifyvm", :id, "--cpus", "2"]   
+    v.customize ["modifyvm", :id, "--ioapic", "on"]
+    #v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+    #v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    #v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   config.vm.provision :puppet do |puppet|
