@@ -1,9 +1,10 @@
 <?php
 define( 'PATH_ROOT', dirname( __DIR__ ) );
-define( 'PATH_SRC', PATH_ROOT . '/resources' );
+define( 'PATH_SRC', PATH_ROOT . '/src' );
+define( 'PATH_RSC', PATH_ROOT . '/resources' );
 
-define( 'PATH_CACHE', PATH_SRC . '/cache' );
-define( 'PATH_LOCALES', PATH_SRC . '/locales' );
+define( 'PATH_CACHE', PATH_RSC . '/cache' );
+define( 'PATH_LOCALES', PATH_RSC . '/locales' );
 
 define( 'PATH_PUBLIC', PATH_ROOT . '/web' );
 define( 'PATH_VENDOR', PATH_ROOT  );
@@ -17,12 +18,12 @@ switch (strtolower($_SERVER["SERVER_NAME"])) {
     case "localhost.silex.poc.equisoft.com":
         // Load Dev Config
         Symfony\Component\Debug\Debug::enable();
-        require PATH_SRC.'/config/dev.php';
+        require PATH_RSC.'/config/dev.php';
         break;
 
     case "silex.poc.equisoft.com":
         // Load Prod Config
-        require PATH_SRC.'/config/prod.php';
+        require PATH_RSC.'/config/prod.php';
         break;
 }
 
