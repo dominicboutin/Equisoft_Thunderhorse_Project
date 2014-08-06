@@ -24,7 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.module_path = "provisions/puppet/modules"
   end
 
-  config.vm.provision :shell do |s|
+  config.vm.provision "shell", run: "always" do |s|
     s.path = "provisions/shell/flush-iptables.sh"
     s.privileged = true
   end
