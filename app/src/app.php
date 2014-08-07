@@ -14,6 +14,7 @@ use Silex\Provider\WebProfilerServiceProvider;
 use SilexAssetic\AsseticServiceProvider;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Monolog\Handler\GelfHandler;
 
 $app->register(new HttpCacheServiceProvider());
 
@@ -60,6 +61,19 @@ $app->register(new MonologServiceProvider(), array(
     'monolog.name'    => 'app',
     'monolog.level'   => 300 // = Logger::WARNING
 ));
+
+$app['monolog'] = $app->share($app->extend('monolog', function($monolog, $app) {
+    $level = MonologServiceProvider::translateLevel($app['monolog.level']);
+
+    $transport = new Gelf\Transport\UdpTransport;
+    $publisher = new Gelf\Publisher($transport, new Gelf\MessageValidator);
+
+    $handler = new GelfHandler($publisher, $level);
+
+    $monolog->pushHandler($handler);
+
+    return $monolog;
+}));
 
 $app->register(new TwigServiceProvider(), array(
     'twig.options'        => array(
