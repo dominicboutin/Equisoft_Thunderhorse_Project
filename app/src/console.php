@@ -8,9 +8,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
-$console = new Application('Silex - Kitchen Edition', '0.1');
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
 
-$app->boot();
+use Symfony\Component\Console\Helper\HelperSet;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+
+require_once __DIR__."../../vendor/autoload.php";
+
+include __DIR__."../../bootstrap.php";
+
+$console = new Application('Silex - Framework', '0.1');
+
+if(isset($app))
+    $app->boot();
 
 $console
     ->register('assetic:dump')
@@ -151,6 +162,8 @@ EOT
     ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
         $connection = $app['db'];
 
+        //$params = $app['db.options'];
+
         $params = $connection->getParams();
         $name = isset($params['path']) ? $params['path'] : $params['dbname'];
 
@@ -165,8 +178,18 @@ EOT
 
         $error = false;
         try {
-            $tmpConnection->getSchemaManager()->createDatabase($name);
-            $output->writeln(sprintf('<info>Created database for connection named <comment>%s</comment></info>', $name));
+            $dbarray = $tmpConnection->getSchemaManager()->listDatabases();
+
+            $name = str_replace('`', '', $name);
+
+            if (isset($dbarray) && in_array($name,$dbarray)) {
+                $output->writeln(sprintf('<info>Table for connection named <comment>%s</comment> exist</info>', $name));
+            }
+            else {
+                $tmpConnection->getSchemaManager()->createDatabase($name);
+                $output->writeln(sprintf('<info>Created database for connection named <comment>%s</comment></info>', $name));
+            }
+
         } catch (\Exception $e) {
             $output->writeln(sprintf('<error>Could not create database for connection named <comment>%s</comment></error>', $name));
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
@@ -178,5 +201,9 @@ EOT
         return $error ? 1 : 0;
     })
 ;
+
+
+$console->setHelperSet($helperSet);
+Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($console);
 
 return $console;
