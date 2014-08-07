@@ -18,6 +18,7 @@ Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/'
 # Set git as provider by default for Vcsrepo so we don't have to specify it everytime
 Vcsrepo { provider => git } 
 
+
 ##### Users & groups section ####
 
 group { 'puppet':   ensure => present }
@@ -39,6 +40,7 @@ user { ['apache', 'nginx', 'httpd', 'www-data']:
   require => Group['www-data']
 }
 
+
 ##### SSH section #####
 
 # Make sure the sftp subsystem point to the right place
@@ -53,6 +55,7 @@ service { 'sshd':
   ensure => 'running',
   enable => true,
 }
+
 
 ###### PHP section #####
 
@@ -84,7 +87,7 @@ package { 'php':
 
 file { '/var/lib/php/session':
   ensure  => directory,
-  owner   => 'www-data',
+  owner   => 'vagrant',
   group   => 'www-data',
   require => [ Package['php'], Package['php-fpm'] ],
 }
@@ -121,7 +124,7 @@ ini_setting { "php-fpm-setting-user":
   path    => '/etc/php-fpm.d/www.conf',
   section => 'www',
   setting => 'user',
-  value   => 'www-data',
+  value   => 'vagrant',
   require => Package['php-fpm'],
   notify  => Service['php-fpm'],
 }
@@ -131,7 +134,7 @@ ini_setting { "php-fpm-setting-group":
   path    => '/etc/php-fpm.d/www.conf',
   section => 'www',
   setting => 'group',
-  value   => 'www-data',
+  value   => 'vagrant',
   require => Package['php-fpm'],
   notify  => Service['php-fpm'],
 }
@@ -147,6 +150,7 @@ service { 'php-fpm' :
   require => Package['php-fpm'],
 }
 
+
 ###### NGINX section ######
 
 include nginx
@@ -157,15 +161,17 @@ include nginx
 vcsrepo { '/srv/ciin':
   ensure   => present,
   source   => 'git://github.com/EquisoftDev/Equisoft_Thunderhorse_Project.git',
-  owner    => 'www-data',
+  owner    => 'vagrant',
   group    => 'www-data',
+  revision => 'develop'
 }
 
 exec { 'project-install':
-  command     => 'sudo -u www-data /usr/local/bin/composer --prefer-source -n -q  install',
-  cwd         => '/srv/ciin/src',
+  command     => 'sudo -u vagrant /usr/local/bin/composer --prefer-source -n -q  install',
+  cwd         => '/srv/ciin/app',
   require     => [ Class['composer'], Vcsrepo['/srv/ciin'] ],
 }
+
 
 ###### Database section ######
 
@@ -216,6 +222,7 @@ vcsrepo { '/srv/webgrind':
   owner    => 'vagrant',
   group    => 'www-data',
 }
+
 
 ###### Misc section ######
 
