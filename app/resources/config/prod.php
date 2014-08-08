@@ -31,8 +31,8 @@ $app['db.options'] = array(
  'driver'	=> 'pdo_mysql',
  'host'		=> 'localhost',
  'dbname'	=> 'test',
- 'user'		=> 'test',
- 'password'	=> 'test01',
+ 'user'		=> 'devuser',
+ 'password'	=> 'devuser',
 );
 
 // User.

@@ -4,6 +4,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "puppetlabs/centos-6.5-64-puppet"
 
+  config.vm.network "forwarded_port", guest: 8080, host: 8088, auto_correct: true
   config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
 
   config.vm.usable_port_range = (8080..8999)

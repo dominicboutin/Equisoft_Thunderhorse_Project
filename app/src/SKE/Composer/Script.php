@@ -11,5 +11,7 @@ class Script
         chmod('web/assets', 0777);
         chmod('console', 0500);
         exec('php console assetic:dump');
+        exec('php console doctrine:database:create');
+        exec('php console orm:schema-tool:update --force');
     }
 }
