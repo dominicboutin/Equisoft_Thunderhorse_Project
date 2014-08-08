@@ -18,7 +18,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 
-class UserProvider extends EntityRepository implements UserProviderInterface
+class UserProvider implements UserProviderInterface
 {
     private $conn;
 
@@ -33,14 +33,6 @@ class UserProvider extends EntityRepository implements UserProviderInterface
             INNER JOIN users_roles ur ON ur.users_id = u.id
             INNER JOIN Roles r ON r.id = ur.roles_id
             WHERE u.username = ?", array(strtolower($username)));
-
-       /* $q = $this
-            ->createQueryBuilder('u')
-            ->where('u.username = :username OR u.email = :email')
-            ->setParameter('username', $username)
-            ->setParameter('email', $username)
-            ->getQuery();*/
-
 
         if (!$user = $stmt->fetch()) {
             throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
