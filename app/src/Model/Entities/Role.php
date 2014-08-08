@@ -5,7 +5,7 @@
  * Date: 08/08/14
  * Time: 2:30 AM
  */
-// Model/Roles.php
+
 namespace Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Entity
  * @ORM\Table(name="Roles")
  */
-class Roles implements RoleInterface
+class Role implements RoleInterface
 {
     /**
      * @ORM\Column(name="id", type="integer")

@@ -5,17 +5,18 @@
  * Date: 06/08/14
  * Time: 2:41 PM
  */
-// Model/Users.php
+
 namespace Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="Users")
  **/
-class Users implements AdvancedUserInterface, \Serializable {
+class User implements AdvancedUserInterface, \Serializable
+{
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
