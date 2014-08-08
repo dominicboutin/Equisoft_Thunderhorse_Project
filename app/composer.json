@@ -46,10 +46,9 @@
             "SKE\\": "src/"
         },
         "psr-4": {
-            "CIIN\\Controller\\": "src/Controller/",
-            "CIIN\\Model\\": "src/Model/",
-            "CIIN\\Service\\": "src/Service/",
-            "CIIN\\": "src/modules"
+            "Controller\\": "src/Controller/",
+            "Model\\": "src/Model/",
+            "Service\\": "src/Service/"
         }
     }	
 }
