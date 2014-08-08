@@ -53,7 +53,7 @@ function TableExist(InputInterface $input, OutputInterface $output, $connection,
 {
     try{
         $params = $connection->getParams();
-        $name = isset($params['path']) ? $params['path'] : $params['dbname'];
+        //$name = isset($params['path']) ? $params['path'] : $params['dbname'];
         //unset($params['dbname']);
 
         $tmpConnection = DriverManager::getConnection($params);
@@ -62,14 +62,47 @@ function TableExist(InputInterface $input, OutputInterface $output, $connection,
         /*if (!isset($params['path'])) {
             $name = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
         }*/
+        $atable = array(
+            $table
+        );
+        $ret = $tmpConnection->getSchemaManager()->tablesExist($atable);
 
-        return $tmpConnection->getSchemaManager()->tablesExist($table);
+        if($ret == true){
+            return $ret;
+        }
+        else if($ret == '')
+        {
+            return false;
+        }
+        else if(!isset($ret))
+        {
+            return false;
+        }
 
-    } catch (\Exception $e) {
+        return true;
+    }
+    catch (\Exception $e) {
         $output->writeln(sprintf('<error>TableExist</error>'));
         $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
     }
-    return false;
+    return true;
+}
+
+function GetConnection(InputInterface $input, OutputInterface $output, $connection)
+{
+    try{
+        $params = $connection->getParams();
+        $name = isset($params['path']) ? $params['path'] : $params['dbname'];
+        //unset($params['dbname']);
+
+        $tmpConnection = DriverManager::getConnection($params);
+
+       return $tmpConnection;
+    } catch (\Exception $e) {
+        $output->writeln(sprintf('<error>GetConnection</error>'));
+        $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+    }
+    return null;
 }
 
 $console
@@ -127,48 +160,85 @@ $console
         $exist = DatabaseExist($input, $output, $app['db']);
         $current_table = '';
 
-        $connection = $app['db'];
-        $params = $connection->getParams();
-        $tmpConnection = DriverManager::getConnection($params);
+        //$connection = $app['db'];
+       // $params = $connection->getParams();
+        //$tmpConnection = DriverManager::getConnection($params);
+
+        $conn = GetConnection($input, $output, $app['db']);
 
         if($exist) {
+            $output->writeln(sprintf('<info>Database already exists</info>'));
             try {
 
                 if(TableExist($input, $output, $app['db'], 'Users')) {
                     $current_table = 'Users';
                     //$user = $app['db']->exec("SELECT * FROM Users WHERE id = 1");
-                    $user = $tmpConnection->exec("SELECT * FROM Users WHERE id = 1");
-                    $tmpConnection->close();
-                    if(!isset($user)){
+
+                    $result = $conn->executeQuery("SELECT * FROM Users WHERE id = (?)",
+                        array((int)1),
+                            array(\PDO::PARAM_INT)
+                            );
+                    $user = $result->fetchAll(\PDO::FETCH_ASSOC);
+
+                    //$conn->close();
+                    if(!isset($user) || (isset($user) && count($user) == 0) ){
+                        $output->writeln(sprintf('<info>Inserting Users</info>'));
                         $path = PATH_RSC . '/db/feed/Users.sql';
                         $sql = file_get_contents($path);
-                        $app['db']->exec($sql.';');
+                        //$conn = GetConnection($input, $output, $app['db']);
+                        $conn->exec($sql.';');
+                        //$conn->close();
                     } else
                         $output->writeln(sprintf('<info>Users already exists</info>'));
+                }
+                else {
+                    $output->writeln(sprintf('<info>Table Users not exists</info>'));
                 }
 
                 if(TableExist($input, $output, $app['db'], 'Roles')) {
                     $current_table = 'Roles';
-                    $role = $tmpConnection->exec("SELECT * FROM Roles WHERE id = 1");
-                    $tmpConnection->close();
-                    if(!isset($role)){
+                    //$conn = GetConnection($input, $output, $app['db']);
+                    $result = $conn->executeQuery("SELECT * FROM Roles WHERE id = (?)",
+                        array((int)1),
+                        array(\PDO::PARAM_INT)
+                    );
+                    $role = $result->fetchAll(\PDO::FETCH_ASSOC);
+                    //$conn->close();
+
+                    if(!isset($role) || (isset($role) && count($role) == 0)){
+                        $output->writeln(sprintf('<info>Inserting Roles</info>'));
                         $path = PATH_RSC . '/db/feed/Roles.sql';
                         $sql = file_get_contents($path);
-                        $app['db']->exec($sql.';');
+                        //$conn = GetConnection($input, $output, $app['db']);
+                        $conn->exec($sql.';');
+                        //$conn->close();
                     } else
                         $output->writeln(sprintf('<info>Roles already exists</info>'));
+                } else {
+                    $output->writeln(sprintf('<info>Table Roles not exists</info>'));
                 }
 
                 if(TableExist($input, $output, $app['db'], 'users_roles')) {
                     $current_table = 'users_roles';
-                    $users_roles = $tmpConnection->exec("SELECT * FROM users_roles WHERE users_id = 1");
-                    $tmpConnection->close();
-                    if(!isset($users_roles)){
+                    //$conn = GetConnection($input, $output, $app['db']);
+
+                    $result = $conn->executeQuery("SELECT * FROM users_roles WHERE users_id = (?)",
+                        array((int)1),
+                        array(\PDO::PARAM_INT)
+                    );
+                    $users_roles = $result->fetchAll(\PDO::FETCH_ASSOC);
+                    //$conn->close();
+                    if(!isset($users_roles) || (isset($user) && count($users_roles) == 0)){
+                        $output->writeln(sprintf('<info>Inserting users_roles</info>'));
                         $path = PATH_RSC . '/db/feed/users_roles.sql';
                         $sql = file_get_contents($path);
-                        $app['db']->exec($sql.';');
+                        //$conn = GetConnection($input, $output, $app['db']);
+                        $conn->exec($sql.';');
+                        //$conn->close();
                     } else
                         $output->writeln(sprintf('<info>users_roles already exists</info>'));
+                }else {
+                    $output->writeln(sprintf('<info>Table users_roles not exists</info>'));
                 }
 
                 $output->writeln(sprintf('<info>Default Users and Roles created.</info>'));
@@ -181,6 +251,8 @@ $console
         else {
             $output->writeln(sprintf('<info>Default Users and Roles already present.</info>'));
         }
+
+        $conn->close();
         return $error ? 1 : 0;
     })
 ;

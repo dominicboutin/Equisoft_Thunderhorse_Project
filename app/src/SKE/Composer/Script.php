@@ -20,7 +20,8 @@ class Script
     public static function Update()
     {
         exec('php console assetic:dump');
-        //exec('php console doctrine:database:create');
+        exec('php console doctrine:database:create');
         exec('php console orm:schema-tool:update --force');
+        exec('php console doctrine:schema:createDefaultUserRole');
     }
 }
