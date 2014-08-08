@@ -5,18 +5,9 @@ use Doctrine\ORM\EntityManager;
 
 require_once __DIR__ ."/vendor/autoload.php";
 
-/*define( 'PATH_ROOT', dirname( __DIR__ ).'/app' );
-define( 'PATH_SRC', PATH_ROOT . '/src' );
-define( 'PATH_RSC', PATH_ROOT . '/resources' );
-
-define( 'PATH_CACHE', PATH_RSC . '/cache' );
-define( 'PATH_LOCALES', PATH_RSC . '/locales' );
-
-define( 'PATH_PUBLIC', PATH_ROOT . '/web' );
-define( 'PATH_VENDOR', PATH_ROOT  );*/
-
 require PATH_RSC.'/config/dev.php';
 
+// add model here
 $paths = array(
     PATH_SRC.'/Model/Users',
     PATH_SRC.'/Model/Roles'
