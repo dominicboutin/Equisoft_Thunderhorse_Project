@@ -19,7 +19,7 @@
         "monolog/monolog"       : "~1.6",
         "silex/silex"           : "~1.1",
         "symfony/config"        : "~2.3",
-        "symfony/console"       : "~2.3",
+        "symfony/console"       : "~2.5",
         "symfony/form"          : "~2.3",
         "symfony/finder"        : "~2.2",
         "symfony/security"      : "~2.3",
@@ -29,7 +29,8 @@
         "symfony/yaml"          : "~2.3",
         "twig/twig"             : "~1.10",
         "silex/web-profiler"    : "~1.0.1",
-        "twitter/bootstrap"     : "2.3.2"
+        "twitter/bootstrap"     : "2.3.2",
+        "doctrine/orm"          : "2.4.*"
     },
     "require-dev": {
         "symfony/browser-kit"   : "~2.3",
@@ -37,8 +38,8 @@
         "symfony/dom-crawler"   : "~2.3"
     },
     "scripts": {
-        "post-install-cmd": "SKE\\Composer\\Script::install",
-        "post-update-cmd": "SKE\\Composer\\Script::install"
+        "post-install-cmd": "SKE\\Composer\\Script::Install",
+        "post-update-cmd": "SKE\\Composer\\Script::Update"
     },
     "autoload": {
         "psr-0": {

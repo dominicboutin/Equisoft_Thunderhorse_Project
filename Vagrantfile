@@ -4,6 +4,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "puppetlabs/centos-6.5-64-puppet"
 
+  config.vm.network "forwarded_port", guest: 8080, host: 8088, auto_correct: true
   config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
 
   config.vm.usable_port_range = (8080..8999)
@@ -12,10 +13,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.name = "CIIN"  
-    #v.memory = 1024
-    #v.cpus = 2
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    v.customize ["modifyvm", :id, "--memory", "1024"]
+    v.customize ["modifyvm", :id, "--cpus", "2"]   
+    v.customize ["modifyvm", :id, "--ioapic", "on"]
+    #v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+    #v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    #v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   config.vm.provision :puppet do |puppet|
@@ -24,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.module_path = "provisions/puppet/modules"
   end
 
-  config.vm.provision :shell do |s|
+  config.vm.provision "shell", run: "always" do |s|
     s.path = "provisions/shell/flush-iptables.sh"
     s.privileged = true
   end

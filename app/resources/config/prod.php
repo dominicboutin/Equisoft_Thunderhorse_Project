@@ -26,13 +26,14 @@ $app['assetic.output.path_to_css']		= 'css/styles.css';
 $app['assetic.input.path_to_js']		= array( PATH_VENDOR . '/twitter/bootstrap/js/*.js', $app['assetic.input.path_to_assets'] . '/js/script.js',);
 $app['assetic.output.path_to_js']		= 'js/script.js';
 
+// modify dbname
 // Doctrine (db).
 $app['db.options'] = array(
  'driver'	=> 'pdo_mysql',
  'host'		=> 'localhost',
  'dbname'	=> 'test',
- 'user'		=> 'test',
- 'password'	=> 'test01',
+ 'user'		=> 'devuser',
+ 'password'	=> 'devuser',
 );
 
 // User.

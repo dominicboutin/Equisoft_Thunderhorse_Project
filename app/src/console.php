@@ -1,5 +1,4 @@
 <?php
-
 use Doctrine\DBAL\DriverManager;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -8,9 +7,103 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
-$console = new Application('Silex - Kitchen Edition', '0.1');
+//use Doctrine\ORM\Tools\Setup;
+//use Doctrine\ORM\EntityManager;
 
-$app->boot();
+use Symfony\Component\Console\Helper\HelperSet;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+
+require_once __DIR__."../../vendor/autoload.php";
+
+include __DIR__."../../bootstrap.php";
+
+$console = new Application('Silex - Framework', '0.1');
+
+if(isset($app))
+    $app->boot();
+
+function DatabaseExist(InputInterface $input, OutputInterface $output, $connection)
+{
+    try{
+        $params = $connection->getParams();
+        $name = isset($params['path']) ? $params['path'] : $params['dbname'];
+        //unset($params['dbname']);
+
+        $tmpConnection = DriverManager::getConnection($params);
+
+        // Only quote if we don't have a path
+        /*if (!isset($params['path'])) {
+            $name = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
+        }*/
+
+        $dbarray = $tmpConnection->getSchemaManager()->listDatabases();
+        $name = str_replace('`', '', $name);
+
+        if (isset($dbarray) && in_array($name,$dbarray)) {
+            return true;
+        }
+    } catch (\Exception $e) {
+        $output->writeln(sprintf('<error>DatabaseExist</error>'));
+        $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+    }
+    return false;
+}
+
+function TableExist(InputInterface $input, OutputInterface $output, $connection, $table)
+{
+    try{
+        $params = $connection->getParams();
+        //$name = isset($params['path']) ? $params['path'] : $params['dbname'];
+        //unset($params['dbname']);
+
+        $tmpConnection = DriverManager::getConnection($params);
+
+        // Only quote if we don't have a path
+        /*if (!isset($params['path'])) {
+            $name = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
+        }*/
+        $atable = array(
+            $table
+        );
+        $ret = $tmpConnection->getSchemaManager()->tablesExist($atable);
+
+        if($ret == true){
+            return $ret;
+        }
+        else if($ret == '')
+        {
+            return false;
+        }
+        else if(!isset($ret))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    catch (\Exception $e) {
+        $output->writeln(sprintf('<error>TableExist</error>'));
+        $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+    }
+    return true;
+}
+
+function GetConnection(InputInterface $input, OutputInterface $output, $connection)
+{
+    try{
+        $params = $connection->getParams();
+        $name = isset($params['path']) ? $params['path'] : $params['dbname'];
+        //unset($params['dbname']);
+
+        $tmpConnection = DriverManager::getConnection($params);
+
+       return $tmpConnection;
+    } catch (\Exception $e) {
+        $output->writeln(sprintf('<error>GetConnection</error>'));
+        $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+    }
+    return null;
+}
 
 $console
     ->register('assetic:dump')
@@ -58,14 +151,109 @@ $console
 ;
 
 $console
-    ->register('doctrine:schema:load')
-    ->setDescription('Load schema')
+    ->register('doctrine:schema:createDefaultUserRole')
+    ->setName('doctrine:schema:createDefaultUserRole')
+    ->setDescription('Create the default users: username, admin and role')
     ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
-        $schema = require PATH_SRC . '/resources/db/schema.php';
+        $error = false;
 
-        foreach ($schema->toSql($app['db']->getDatabasePlatform()) as $sql) {
-            $app['db']->exec($sql.';');
+        $exist = DatabaseExist($input, $output, $app['db']);
+        $current_table = '';
+
+        //$connection = $app['db'];
+       // $params = $connection->getParams();
+        //$tmpConnection = DriverManager::getConnection($params);
+
+        $conn = GetConnection($input, $output, $app['db']);
+
+        if($exist) {
+            $output->writeln(sprintf('<info>Database already exists</info>'));
+            try {
+
+                if(TableExist($input, $output, $app['db'], 'Users')) {
+                    $current_table = 'Users';
+                    //$user = $app['db']->exec("SELECT * FROM Users WHERE id = 1");
+
+                    $result = $conn->executeQuery("SELECT * FROM Users WHERE id = (?)",
+                        array((int)1),
+                            array(\PDO::PARAM_INT)
+                            );
+                    $user = $result->fetchAll(\PDO::FETCH_ASSOC);
+
+                    //$conn->close();
+                    if(!isset($user) || (isset($user) && count($user) == 0) ){
+                        $output->writeln(sprintf('<info>Inserting Users</info>'));
+                        $path = PATH_RSC . '/db/feed/Users.sql';
+                        $sql = file_get_contents($path);
+                        //$conn = GetConnection($input, $output, $app['db']);
+                        $conn->exec($sql.';');
+                        //$conn->close();
+                    } else
+                        $output->writeln(sprintf('<info>Users already exists</info>'));
+                }
+                else {
+                    $output->writeln(sprintf('<info>Table Users not exists</info>'));
+                }
+
+                if(TableExist($input, $output, $app['db'], 'Roles')) {
+                    $current_table = 'Roles';
+                    //$conn = GetConnection($input, $output, $app['db']);
+                    $result = $conn->executeQuery("SELECT * FROM Roles WHERE id = (?)",
+                        array((int)1),
+                        array(\PDO::PARAM_INT)
+                    );
+                    $role = $result->fetchAll(\PDO::FETCH_ASSOC);
+                    //$conn->close();
+
+                    if(!isset($role) || (isset($role) && count($role) == 0)){
+                        $output->writeln(sprintf('<info>Inserting Roles</info>'));
+                        $path = PATH_RSC . '/db/feed/Roles.sql';
+                        $sql = file_get_contents($path);
+                        //$conn = GetConnection($input, $output, $app['db']);
+                        $conn->exec($sql.';');
+                        //$conn->close();
+                    } else
+                        $output->writeln(sprintf('<info>Roles already exists</info>'));
+                } else {
+                    $output->writeln(sprintf('<info>Table Roles not exists</info>'));
+                }
+
+                if(TableExist($input, $output, $app['db'], 'users_roles')) {
+                    $current_table = 'users_roles';
+                    //$conn = GetConnection($input, $output, $app['db']);
+
+                    $result = $conn->executeQuery("SELECT * FROM users_roles WHERE users_id = (?)",
+                        array((int)1),
+                        array(\PDO::PARAM_INT)
+                    );
+                    $users_roles = $result->fetchAll(\PDO::FETCH_ASSOC);
+                    //$conn->close();
+                    if(!isset($users_roles) || (isset($user) && count($users_roles) == 0)){
+                        $output->writeln(sprintf('<info>Inserting users_roles</info>'));
+                        $path = PATH_RSC . '/db/feed/users_roles.sql';
+                        $sql = file_get_contents($path);
+                        //$conn = GetConnection($input, $output, $app['db']);
+                        $conn->exec($sql.';');
+                        //$conn->close();
+                    } else
+                        $output->writeln(sprintf('<info>users_roles already exists</info>'));
+                }else {
+                    $output->writeln(sprintf('<info>Table users_roles not exists</info>'));
+                }
+
+                $output->writeln(sprintf('<info>Default Users and Roles created.</info>'));
+            } catch (\Exception $e) {
+                $output->writeln(sprintf('<error>Could not create default Users [%s]</error>', $current_table));
+                $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+                $error = true;
+            }
         }
+        else {
+            $output->writeln(sprintf('<info>Default Users and Roles already present.</info>'));
+        }
+
+        $conn->close();
+        return $error ? 1 : 0;
     })
 ;
 
@@ -151,6 +339,8 @@ EOT
     ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
         $connection = $app['db'];
 
+        //$params = $app['db.options'];
+
         $params = $connection->getParams();
         $name = isset($params['path']) ? $params['path'] : $params['dbname'];
 
@@ -165,8 +355,18 @@ EOT
 
         $error = false;
         try {
-            $tmpConnection->getSchemaManager()->createDatabase($name);
-            $output->writeln(sprintf('<info>Created database for connection named <comment>%s</comment></info>', $name));
+            $dbarray = $tmpConnection->getSchemaManager()->listDatabases();
+
+            $name = str_replace('`', '', $name);
+
+            if (isset($dbarray) && in_array($name,$dbarray)) {
+                $output->writeln(sprintf('<info>Table for connection named <comment>%s</comment> exist</info>', $name));
+            }
+            else {
+                $tmpConnection->getSchemaManager()->createDatabase($name);
+                $output->writeln(sprintf('<info>Created database for connection named <comment>%s</comment></info>', $name));
+            }
+
         } catch (\Exception $e) {
             $output->writeln(sprintf('<error>Could not create database for connection named <comment>%s</comment></error>', $name));
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
@@ -178,5 +378,9 @@ EOT
         return $error ? 1 : 0;
     })
 ;
+
+
+$console->setHelperSet($helperSet);
+Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($console);
 
 return $console;
