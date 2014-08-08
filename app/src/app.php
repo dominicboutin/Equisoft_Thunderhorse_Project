@@ -14,6 +14,7 @@ use Silex\Provider\WebProfilerServiceProvider;
 use SilexAssetic\AsseticServiceProvider;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Model\Repositories\UserRepository;
 
 $app->register(new HttpCacheServiceProvider());
 
@@ -21,8 +22,6 @@ $app->register(new SessionServiceProvider());
 $app->register(new ValidatorServiceProvider());
 $app->register(new FormServiceProvider());
 $app->register(new UrlGeneratorServiceProvider());
-
-require PATH_SRC . '/Model/Users/UserProvider.php';
 
 $app->register(new SecurityServiceProvider(), array(
     'security.firewalls' => array(
@@ -41,8 +40,7 @@ $app->register(new SecurityServiceProvider(), array(
             //'anonymous' => true,
             //'users'     => $app['security.users'],
             'users' => $app->share(function() use ($app) {
-                    // Specific class App\User\UserProvider is described below
-                    return new Model\Entities\UserProvider($app['db']);
+                    return new UserRepository($app['db']);
                 }),
         ),
     ),
