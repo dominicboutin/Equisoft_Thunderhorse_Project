@@ -17,10 +17,13 @@ define( 'PATH_VENDOR', PATH_ROOT  );*/
 
 require PATH_RSC.'/config/dev.php';
 
-$paths = array(PATH_SRC.'/Model/Users');
+$paths = array(
+    PATH_SRC.'/Model/Users',
+    PATH_SRC.'/Model/Roles'
+);
 
-$isDevMode = true;
-$config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+$isDevMode = false;
+$config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
 
 $params = $app['db.options'];
 /*
