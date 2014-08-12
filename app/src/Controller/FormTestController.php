@@ -1,5 +1,5 @@
 <?php
-namespace CIIN\Controller
+namespace Controller
 {
 	use Silex\Application;
 	use Silex\ControllerProviderInterface;

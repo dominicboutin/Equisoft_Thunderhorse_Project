@@ -6,7 +6,7 @@
  * Time: 7:17 AM
  */
 
-namespace Model\Entities;
+namespace Model\Repositories;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -14,11 +14,9 @@ use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Doctrine\DBAL\Connection;
-
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
 
-class UserProvider implements UserProviderInterface
+class UserRepository extends EntityRepository implements UserProviderInterface
 {
     private $conn;
 
