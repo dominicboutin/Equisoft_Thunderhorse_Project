@@ -1,5 +1,10 @@
 <?php
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Tools\Setup;
 use Silex\Provider\FormServiceProvider;
 use Silex\Provider\HttpCacheServiceProvider;
 use Silex\Provider\MonologServiceProvider;
@@ -38,10 +43,10 @@ $app->register(new SecurityServiceProvider(), array(
             ),
             'logout'    => true,
             //'anonymous' => true,
-            //'users'     => $app['security.users'],
-            'users' => $app->share(function() use ($app) {
+            'users'     => $app['security.users'],
+            /*'users' => $app->share(function() use ($app) {
                     return new UserRepository($app['db']);
-                }),
+                }),*/
         ),
     ),
 ));
@@ -120,7 +125,19 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
 
 }
 
-$app->register(new Silex\Provider\DoctrineServiceProvider());
+$app['em'] = $app->share(function ($app) {
+    $paths = array(PATH_SRC.'/Model/Entities');
+    $isDevMode = false;
+
+    $config = Setup::createConfiguration($isDevMode);
+    $driver = new AnnotationDriver(new AnnotationReader(), $paths);
+
+    // registering noop annotation autoloader - allow all annotations by default
+    AnnotationRegistry::registerLoader('class_exists');
+    $config->setMetadataDriverImpl($driver);
+
+    return EntityManager::create($app['db.options'], $config);
+});
 
 require PATH_SRC . '/routes.php';
 

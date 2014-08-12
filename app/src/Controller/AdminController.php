@@ -1,6 +1,6 @@
 <?php
 
-namespace CIIN\Controller
+namespace Controller
 {
 	use Silex\Application;
 	use Silex\ControllerProviderInterface;
@@ -17,7 +17,7 @@ namespace CIIN\Controller
 
 		public function index( Application $app )
 		{
-			return $app['twig']->render('admin-layout.html.twig');
+			return $app['twig']->render('admin-index.html.twig');
 		}
 	}
 }

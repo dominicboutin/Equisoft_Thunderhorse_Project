@@ -8,11 +8,12 @@
 
 namespace Model\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Model\Repositories\UserRepository")
  * @ORM\Table(name="Users")
  **/
 class User implements AdvancedUserInterface, \Serializable
@@ -49,45 +50,16 @@ class User implements AdvancedUserInterface, \Serializable
      */
     protected $password;
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getLastname()
-    {
-        return $this->$lastname;
-    }
-
-    public function setLastname($lastname)
-    {
-        $this->$lastname = $lastname;
-    }
-
-    public function getFirstname()
-    {
-        return $this->$firstname;
-    }
-
-    public function setFirstname($firstname)
-    {
-        $this->$lastname = $firstname;
-    }
-
-    public function getEmail()
-    {
-        return $this->$email;
-    }
-
-    public function setEmail($email)
-    {
-        $this->$email = $email;
-    }
-
     /**
      * @ORM\Column(name="isActive", type="boolean")
      */
     protected $isActive = 1;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Role", inversedBy="User")
+     * @ORM\JoinColumn(name="roles_id_users", referencedColumnName="id")
+     */
+    protected $roles;
 
     public function __construct()
     {
@@ -95,6 +67,41 @@ class User implements AdvancedUserInterface, \Serializable
         $this->roles = new ArrayCollection();
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid(null, true));
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+    }
+
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname($firstname)
+    {
+        $this->firstname = $firstname;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
     }
 
     /**
@@ -122,13 +129,6 @@ class User implements AdvancedUserInterface, \Serializable
     {
         return $this->password;
     }
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Roles", inversedBy="Users")
-     * @ORM\JoinColumn(name="roles_id_users", referencedColumnName="id")
-     *
-     */
-    private $roles;
 
     public function getRoles()
     {

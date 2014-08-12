@@ -36,7 +36,7 @@ class Role implements RoleInterface
     protected $role;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Users", mappedBy="Roles")
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="Role")
      */
     protected $users;
 

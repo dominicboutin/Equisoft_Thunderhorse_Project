@@ -8,48 +8,60 @@
 
 namespace Model\Repositories;
 
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityRepository;
 
 class UserRepository extends EntityRepository implements UserProviderInterface
 {
-    private $conn;
-
-    public function __construct(Connection $conn)
-    {
-        $this->conn = $conn;
-    }
-
     public function loadUserByUsername($username)
     {
-        $stmt = $this->conn->executeQuery("SELECT u.username, u.password, r.role FROM Users u
-            INNER JOIN users_roles ur ON ur.users_id = u.id
-            INNER JOIN Roles r ON r.id = ur.roles_id
-            WHERE u.username = ?", array(strtolower($username)));
+        $q = $this
+            ->createQueryBuilder('u')
+            ->select('u, r')
+            ->leftJoin('u.roles', 'r')
+            ->where('u.username = :username OR u.email = :email')
+            ->setParameter('username', $username)
+            ->setParameter('email', $username)
+            ->getQuery();
 
-        if (!$user = $stmt->fetch()) {
-            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
+        try {
+            // The Query::getSingleResult() method throws an exception
+            // if there is no record matching the criteria.
+            $user = $q->getSingleResult();
+        } catch (NoResultException $e) {
+            $message = sprintf(
+                'Unable to find an active admin AcmeUserBundle:User object identified by "%s".',
+                $username
+            );
+            throw new UsernameNotFoundException($message, 0, $e);
         }
 
-        return new User($user['username'], $user['password'], explode(',', $user['role']), true, true, true, true);
+        return $user;
     }
 
     public function refreshUser(UserInterface $user)
     {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
+        $class = get_class($user);
+        if (!$this->supportsClass($class)) {
+            throw new UnsupportedUserException(
+                sprintf(
+                    'Instances of "%s" are not supported.',
+                    $class
+                )
+            );
         }
 
-        return $this->loadUserByUsername($user->getUsername());
+        return $this->find($user->getId());
     }
 
     public function supportsClass($class)
     {
-        return $class === 'Symfony\Component\Security\Core\User\User';
+        return $this->getEntityName() === $class
+        || is_subclass_of($class, $this->getEntityName());
     }
 } 

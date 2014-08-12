@@ -48,7 +48,9 @@
         "psr-4": {
             "Controller\\": "src/Controller/",
             "Model\\": "src/Model/",
-            "Service\\": "src/Service/"
+            "Service\\": "src/Service/",
+            "Form\\": "src/Form/",
+            "Users\\": "src/modules/Users/"
         }
     }	
 }
