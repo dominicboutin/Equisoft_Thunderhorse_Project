@@ -3,7 +3,9 @@
 $app->mount('/', new Controller\LoginController() );
 $app->mount('/', new Controller\HomeController() );
 $app->mount('/', new Controller\FormTestController() );
-//$app->mount('/users', new CIIN\Users\Controller\UsersController() );
+
+$app->mount('/admin', new Controller\AdminController() );
+$app->mount('/admin/users', new Users\Controller\AdminController() );
 
 $app->mount('/stockcode', new Service\StockcodeController() );
 
