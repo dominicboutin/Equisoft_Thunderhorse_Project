@@ -125,6 +125,8 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
 
 }
 
+$app->register(new Silex\Provider\DoctrineServiceProvider());
+
 $app['em'] = $app->share(function ($app) {
     $paths = array(PATH_SRC.'/Model/Entities');
     $isDevMode = false;
