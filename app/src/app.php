@@ -30,6 +30,10 @@ $app->register(new UrlGeneratorServiceProvider());
 
 $app->register(new SecurityServiceProvider(), array(
     'security.firewalls' => array(
+        'dev' => array(
+            'pattern' => '^/(_(profiler|wdt)|css|images|js)/',
+            'security' => false
+        ),
 		'login' => array(
 			'pattern' => '^/login$',
 			'anonymous' => true
