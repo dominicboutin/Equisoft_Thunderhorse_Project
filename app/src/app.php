@@ -43,10 +43,10 @@ $app->register(new SecurityServiceProvider(), array(
             ),
             'logout'    => true,
             //'anonymous' => true,
-            'users'     => $app['security.users'],
-            /*'users' => $app->share(function() use ($app) {
-                    return new UserRepository($app['db']);
-                }),*/
+            //'users'     => $app['security.users'],
+            'users' => $app->share(function() use ($app) {
+                    return new UserRepository($app['em'], $app['em']->getClassMetadata('Model\Entities\User'));
+                }),
         ),
     ),
 ));

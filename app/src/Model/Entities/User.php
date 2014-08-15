@@ -50,7 +50,10 @@ class User extends Base implements AdvancedUserInterface, \Serializable
 
     /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="User")
-     * @ORM\JoinColumn(name="roles_id_users", referencedColumnName="id")
+     * @ORM\JoinTable(name="users_roles",
+     *      joinColumns={@ORM\JoinColumn(name="users_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="roles_id", referencedColumnName="id")}
+     *      )
      */
     protected $roles;
 
