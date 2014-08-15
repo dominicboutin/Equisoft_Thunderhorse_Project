@@ -17,7 +17,7 @@ namespace Controller
 
 		public function index( Application $app )
 		{
-			return $app['twig']->render('admin-index.html.twig');
+			return $app['twig']->render('admin/index.html.twig');
 		}
 	}
 }
