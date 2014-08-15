@@ -16,15 +16,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Entity
  * @ORM\Table(name="Roles")
  */
-class Role implements RoleInterface
+class Role extends Base implements RoleInterface
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
     /**
      * @ORM\Column(name="name", type="string", length=30)
      */

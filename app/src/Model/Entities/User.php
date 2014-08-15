@@ -16,15 +16,8 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  * @ORM\Entity(repositoryClass="Model\Repositories\UserRepository")
  * @ORM\Table(name="Users")
  **/
-class User implements AdvancedUserInterface, \Serializable
+class User extends Base implements AdvancedUserInterface, \Serializable
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    protected $id;
-
     /**
      * @ORM\Column(type="string")
      */
@@ -112,14 +105,9 @@ class User implements AdvancedUserInterface, \Serializable
         return $this->username;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getSalt()
+    public function setUsername($username)
     {
-        // you *may* need a real salt depending on your encoder
-        // see section on salt below
-        return null;
+        $this->username = $username;
     }
 
     /**
@@ -128,6 +116,21 @@ class User implements AdvancedUserInterface, \Serializable
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSalt()
+    {
+        // you *may* need a real salt depending on your encoder
+        // see section on salt below
+        return null;
     }
 
     public function getRoles()
