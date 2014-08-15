@@ -30,8 +30,6 @@ namespace Users\Controller
         public function new_user( Application $app )
         {
             $user = new User();
-            $user->setFirstname('lol');
-            $user->setLastname('lol2');
             $builder = $app['form.factory']->createBuilder(new UserType(), $user);
 
             $form = $builder
@@ -42,11 +40,12 @@ namespace Users\Controller
             $form->handleRequest($request);
             if ($form->isSubmitted()) {
                 if ($form->isValid()) {
-                    print_r($user);
-                    $app['session']->getFlashBag()->add('success', 'The form is valid');
+                    $user->persist($app['em']);
+                    $app['em']->flush();
+                    $app['session']->getFlashBag()->add('success', 'User was created');
                 } else {
                     $form->addError(new FormError('This is a global error'));
-                    $app['session']->getFlashBag()->add('info', 'The form is bound, but not valid');
+                    $app['session']->getFlashBag()->add('info', 'Error, the user could not be created');
                 }
             }
 

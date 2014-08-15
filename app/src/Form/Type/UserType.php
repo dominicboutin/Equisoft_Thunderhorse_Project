@@ -12,7 +12,7 @@ namespace Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class NewUserType extends AbstractType {
+class UserType extends AbstractType {
 
     /**
      * {@inheritdoc}
@@ -20,10 +20,11 @@ class NewUserType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fist_name')
-            ->add('last_name')
-            ->add('username')
+            ->add('user_name')
             ->add('password', 'password')
+            ->add('first_name')
+            ->add('last_name')
+            ->add('email')
             ->add('submit', 'submit');
     }
 
