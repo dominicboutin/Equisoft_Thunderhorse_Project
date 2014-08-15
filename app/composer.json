@@ -20,7 +20,7 @@
         "silex/silex"           : "~1.1",
         "symfony/config"        : "~2.3",
         "symfony/console"       : "~2.5",
-        "symfony/form"          : "~2.3",
+        "symfony/form"          : "2.5.2",
         "symfony/finder"        : "~2.2",
         "symfony/security"      : "~2.3",
         "symfony/translation"   : "~2.3",
