@@ -35,9 +35,12 @@ namespace Controller
 			->add('password', 'password', array('label' => 'Password'))
 			->getForm()
 			;
-			
-			$token = $app['security']->getToken();			
 			 //echo $token;
+
+            $token = $app['security']->getToken();
+            if (null !== $token) {
+                $user = $token->getUser();
+            }
 			 
 			$request = $app["request"];
 			return $app['twig']->render('login.html.twig', array(
