@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e6586dd6a2c66942045bece2bfec6db2",
+    "hash": "fbe0648fbc7f161b8767b94dc0b29452",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -483,17 +483,32 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "v2.4.4",
+            "version": "dev-hotfix/php-5.6-support",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "fc19c3b53dcd00e6584db40669fdd699c4671f97"
+                "url": "https://github.com/EquisoftDev/doctrine2.git",
+                "reference": "81a8cac013ac945fdeb5bd970548252cbf164c7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/fc19c3b53dcd00e6584db40669fdd699c4671f97",
-                "reference": "fc19c3b53dcd00e6584db40669fdd699c4671f97",
+                "url": "https://api.github.com/repos/EquisoftDev/doctrine2/zipball/81a8cac013ac945fdeb5bd970548252cbf164c7a",
+                "reference": "81a8cac013ac945fdeb5bd970548252cbf164c7a",
                 "shasum": ""
+            },
+            "archive": {
+                "exclude": [
+                    "!vendor",
+                    "tests",
+                    "*phpunit.xml",
+                    ".travis.yml",
+                    "build.xml",
+                    "build.properties",
+                    "composer.phar",
+                    "vendor/satooshi",
+                    "lib/vendor",
+                    "*.swp",
+                    "*coveralls.yml"
+                ]
             },
             "require": {
                 "doctrine/collections": "~1.1",
@@ -524,21 +539,13 @@
                     "Doctrine\\ORM\\": "lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                },
-                {
                     "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com",
-                    "homepage": "http://www.instaclick.com"
+                    "email": "guilhermeblanco@gmail.com"
                 },
                 {
                     "name": "Roman Borschel",
@@ -547,6 +554,10 @@
                 {
                     "name": "Benjamin Eberlei",
                     "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
                 }
             ],
             "description": "Object-Relational-Mapper for PHP",
@@ -555,7 +566,10 @@
                 "database",
                 "orm"
             ],
-            "time": "2014-07-11 03:05:53"
+            "support": {
+                "source": "https://github.com/EquisoftDev/doctrine2/tree/hotfix/php-5.6-support"
+            },
+            "time": "2014-08-18 15:18:21"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -1324,17 +1338,17 @@
         },
         {
             "name": "symfony/form",
-            "version": "v2.5.3",
+            "version": "v2.5.2",
             "target-dir": "Symfony/Component/Form",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Form.git",
-                "reference": "25c892aed20ce15e99bf84eee2f9e7263f14ed30"
+                "reference": "b9a1ddbf22ce64d85a71d1ff06c963fb3daaf877"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Form/zipball/25c892aed20ce15e99bf84eee2f9e7263f14ed30",
-                "reference": "25c892aed20ce15e99bf84eee2f9e7263f14ed30",
+                "url": "https://api.github.com/repos/symfony/Form/zipball/b9a1ddbf22ce64d85a71d1ff06c963fb3daaf877",
+                "reference": "b9a1ddbf22ce64d85a71d1ff06c963fb3daaf877",
                 "shasum": ""
             },
             "require": {
@@ -1374,17 +1388,19 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Form Component",
             "homepage": "http://symfony.com",
-            "time": "2014-08-05 15:39:31"
+            "time": "2014-07-15 14:46:59"
         },
         {
             "name": "symfony/http-foundation",
@@ -2526,9 +2542,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "doctrine/orm": 20
+    },
     "prefer-stable": false,
     "platform": [
 
