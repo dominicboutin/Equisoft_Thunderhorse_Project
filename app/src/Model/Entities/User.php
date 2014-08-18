@@ -160,9 +160,9 @@ class User extends Base implements AdvancedUserInterface, \Serializable
             $this->lastname,
             $this->firstname,
             $this->email,
-            $this->isActive
+            $this->isActive,
             // see section on salt below
-            // $this->salt,
+            'test',
         ));
     }
 
@@ -178,9 +178,9 @@ class User extends Base implements AdvancedUserInterface, \Serializable
             $this->lastname,
             $this->firstname,
             $this->email,
-            $this->isActive
+            $this->isActive,
             // see section on salt below
-            // $this->salt
+            $this->salt
             ) = unserialize($serialized);
     }
 

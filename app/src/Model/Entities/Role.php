@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Entity
  * @ORM\Table(name="Roles")
  */
-class Role extends Base implements RoleInterface
+class Role extends Base implements RoleInterface, \Serializable
 {
     /**
      * @ORM\Column(name="name", type="string", length=30)
@@ -67,4 +67,29 @@ class Role extends Base implements RoleInterface
     }
 
     // ... getters and setters for each property
+
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        /*
+         * ! Don't serialize $users field !
+         */
+        return \serialize(array(
+            $this->id,
+            $this->role
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+        list(
+            $this->id,
+            $this->role
+            ) = \unserialize($serialized);
+    }
 }
