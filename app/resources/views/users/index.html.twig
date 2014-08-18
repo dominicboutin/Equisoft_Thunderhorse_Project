@@ -23,6 +23,7 @@
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Username</th>
+                        <th>Role</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,6 +33,11 @@
                             <td>{{ user.firstname }}</td>
                             <td>{{ user.lastname }}</td>
                             <td>{{ user.username }}</td>
+                            <td>
+                                {% for role in user.roles %}
+                                    <div>{{ role.name }}</div>
+                                {% endfor %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
