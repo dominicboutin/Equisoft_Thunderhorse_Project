@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  * @ORM\Entity(repositoryClass="Model\Repositories\UserRepository")
  * @ORM\Table(name="Users")
  **/
-class User extends Base implements AdvancedUserInterface//, \Serializable
+class User extends Base implements AdvancedUserInterface, \Serializable
 {
     /**
      * @ORM\Column(type="string")
