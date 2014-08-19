@@ -8,9 +8,9 @@
 
 namespace Form\Type;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class UserType extends AbstractType {
 
@@ -20,12 +20,24 @@ class UserType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('user_name')
+            ->add('username')
             ->add('password', 'password')
-            ->add('first_name')
-            ->add('last_name')
+            ->add('roles', 'collection', array(
+                'type'       => new RoleType(),
+                'allow_add'  => true,
+                'label'      => false,
+            ))
+            ->add('firstName')
+            ->add('lastName')
             ->add('email')
             ->add('submit', 'submit');
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Model\Entities\User',
+        ));
     }
 
     /**
@@ -35,6 +47,6 @@ class UserType extends AbstractType {
      */
     public function getName()
     {
-        return "new_user";
+        return "user";
     }
 }

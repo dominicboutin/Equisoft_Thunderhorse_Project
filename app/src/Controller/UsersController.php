@@ -15,7 +15,7 @@ namespace Controller
 			$homeController = $app['controllers_factory'];
 			$homeController->get("/", array( $this, 'index' ) )->bind( 'admin-users' );
             $homeController->get("/user/{id}", array( $this, 'user' ) )->bind( 'admin-user' );
-            $homeController->match("/add-user", array( $this, 'add_user' ) )->bind( 'admin-add-user' );
+            $homeController->match("/new", array( $this, 'add_user' ) )->bind( 'admin-add-user' );
 			
 			return $homeController;
 		}
@@ -50,15 +50,14 @@ namespace Controller
             $user = new User();
             $builder = $app['form.factory']->createBuilder(new UserType(), $user);
 
-            $form = $builder
-                ->getForm();
+            $form = $builder->getForm();
 
             $request = $app["request"];
 
             $form->handleRequest($request);
             if ($form->isSubmitted()) {
                 if ($form->isValid()) {
-                    $user->persist($app['em']);
+                    $app['em']->persist($user);
                     $app['em']->flush();
                     $app['session']->getFlashBag()->add('success', 'User was created');
                 } else {
