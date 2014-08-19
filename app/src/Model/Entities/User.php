@@ -65,11 +65,6 @@ class User extends Base implements AdvancedUserInterface, \Serializable
         // $this->salt = md5(uniqid(null, true));
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
     public function getLastname()
     {
         return $this->lastname;
@@ -139,6 +134,16 @@ class User extends Base implements AdvancedUserInterface, \Serializable
     public function getRoles()
     {
         return $this->roles->toArray();
+    }
+
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
+    public function addRole(Role $role)
+    {
+        $this->roles->add($role);
     }
 
     /**
