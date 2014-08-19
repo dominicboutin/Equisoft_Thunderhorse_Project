@@ -13,19 +13,19 @@ namespace Controller
 		public function connect( Application $app )
 		{
 			$homeController = $app['controllers_factory'];
-			$homeController->get("/", array( $this, 'index' ) )->bind( 'admin-users' );
+			$homeController->get("/", array( $this, 'users' ) )->bind( 'admin-users' );
             $homeController->get("/user/{id}", array( $this, 'user' ) )->bind( 'admin-user' );
             $homeController->match("/new", array( $this, 'add_user' ) )->bind( 'admin-add-user' );
 			
 			return $homeController;
 		}
 
-		public function index( Application $app )
+		public function users( Application $app )
 		{
             $repository = $app['em']->getRepository('\Model\Entities\User');
             $users = $repository->findAll();
 
-			return $app['twig']->render('users/index.html.twig', array('users' => $users));
+			return $app['twig']->render('users/users.html.twig', array('users' => $users));
 		}
 
         public function user( Application $app, $id )
