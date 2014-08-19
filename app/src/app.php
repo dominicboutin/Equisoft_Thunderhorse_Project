@@ -5,6 +5,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
+use Form\Extensions\Doctrine\Bridge\ManagerRegistry;
 use Silex\Provider\FormServiceProvider;
 use Silex\Provider\HttpCacheServiceProvider;
 use Silex\Provider\MonologServiceProvider;
@@ -17,6 +18,7 @@ use Silex\Provider\UrlGeneratorServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\WebProfilerServiceProvider;
 use SilexAssetic\AsseticServiceProvider;
+use Symfony\Bridge\Doctrine\Form\DoctrineOrmExtension;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Model\Repositories\UserRepository;
@@ -26,6 +28,14 @@ $app->register(new HttpCacheServiceProvider());
 $app->register(new SessionServiceProvider());
 $app->register(new ValidatorServiceProvider());
 $app->register(new FormServiceProvider());
+$app['form.extensions'] = $app->share($app->extend('form.extensions', function ($extensions) use ($app) {
+  $manager = new ManagerRegistry(null, array(), array('em'), null, null, '\Doctrine\ORM\Proxy\Proxy');
+  $manager->setContainer($app);
+  $extensions[] = new DoctrineOrmExtension($manager);
+
+  return $extensions;
+}));
+
 $app->register(new UrlGeneratorServiceProvider());
 
 $app->register(new SecurityServiceProvider(), array(

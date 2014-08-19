@@ -28,8 +28,8 @@ class Base {
         return $this->id;
     }
 
-    public function persist(EntityManager $em)
+    public function setId($id)
     {
-        $em->persist($this);
+        $this->id = $id;
     }
 } 
