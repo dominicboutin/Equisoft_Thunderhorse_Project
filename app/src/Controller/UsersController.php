@@ -6,6 +6,7 @@ namespace Controller
     use Model\Entities\User;
     use Silex\Application;
 	use Silex\ControllerProviderInterface;
+    use Symfony\Component\Form\FormBuilderInterface;
     use Symfony\Component\Form\FormError;
 
     class UsersController implements ControllerProviderInterface
@@ -14,8 +15,8 @@ namespace Controller
 		{
 			$homeController = $app['controllers_factory'];
 			$homeController->get("/", array( $this, 'users' ) )->bind( 'admin-users' );
-            $homeController->get("/user/{id}", array( $this, 'user' ) )->bind( 'admin-user' );
-            $homeController->match("/new", array( $this, 'add_user' ) )->bind( 'admin-add-user' );
+            $homeController->match("/user/{id}", array( $this, 'user' ) )->bind( 'admin-user' );
+            $homeController->match("/new", array( $this, 'new_user' ) )->bind( 'admin-new-user' );
 			
 			return $homeController;
 		}
@@ -25,27 +26,52 @@ namespace Controller
             $repository = $app['em']->getRepository('\Model\Entities\User');
             $users = $repository->findAll();
 
-			return $app['twig']->render('users/users.html.twig', array('users' => $users));
+			return $app['twig']->render('admin/users/users.html.twig', array('users' => $users));
 		}
 
+        /**
+         * @param Application $app
+         * @param             $id
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         */
         public function user( Application $app, $id )
         {
             $repository = $app['em']->getRepository('\Model\Entities\User');
-            $users = $repository->findById($id);
+            $user = $repository->findOneById($id);
 
-            if (count($users) > 0)
-            {
-                $user = $users[0];
-                return $app['twig']->render('users/user.html.twig', array('user' => $user));
-            }
-            else
+            if ( ! $user)
             {
                 $app['session']->getFlashBag()->add('warning', 'User do not exist');
                 return $app->redirect('/admin/users/');
             }
+
+            $request = $app["request"];
+
+            /** @var FormBuilderInterface $builder */
+            $builder = $app['form.factory']->createBuilder(new UserType(), $user);
+
+            $form = $builder->getForm();
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted())
+            {
+                if ($form->isValid())
+                {
+                    $app['em']->persist($user);
+                    $app['em']->flush();
+                    $app['session']->getFlashBag()->add('success', 'User was saved');
+                }
+                else
+                {
+                    $form->addError(new FormError('This is a global error'));
+                    $app['session']->getFlashBag()->add('info', 'Error, the user could not be saved');
+                }
+            }
+
+            return $app['twig']->render('admin/users/user.html.twig', array('form' => $form->createView()));
         }
 
-        public function add_user( Application $app )
+        public function new_user( Application $app )
         {
             $user = new User();
             $builder = $app['form.factory']->createBuilder(new UserType(), $user);
@@ -66,7 +92,7 @@ namespace Controller
                 }
             }
 
-            return $app['twig']->render('users/add_user.html.twig', array('form' => $form->createView()));
+            return $app['twig']->render('admin/users/new_user.html.twig', array('form' => $form->createView()));
         }
 	}
 }

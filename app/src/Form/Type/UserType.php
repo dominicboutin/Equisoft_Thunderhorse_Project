@@ -22,10 +22,11 @@ class UserType extends AbstractType {
         $builder
             ->add('username')
             ->add('password', 'password')
-            ->add('roles', 'collection', array(
-                'type'       => new RoleType(),
-                'allow_add'  => true,
-                'label'      => false,
+            ->add('roles', 'entity', array(
+                'class'    => 'Model\Entities\Role',
+                'property' => 'name',
+                'expanded' => TRUE,
+                'multiple' => TRUE
             ))
             ->add('firstName')
             ->add('lastName')
