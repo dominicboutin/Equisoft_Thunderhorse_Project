@@ -33,6 +33,10 @@ namespace Controller
 				)
 			)
 			->add('password', 'password', array('label' => 'Password'))
+            ->add('remember_me', 'checkbox', array(
+                    'label' => 'Keep me logged in',
+                    'data' => true
+                ))
 			->getForm()
 			;
 			

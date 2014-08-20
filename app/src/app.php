@@ -9,6 +9,7 @@ use Form\Extensions\Doctrine\Bridge\ManagerRegistry;
 use Silex\Provider\FormServiceProvider;
 use Silex\Provider\HttpCacheServiceProvider;
 use Silex\Provider\MonologServiceProvider;
+use Silex\Provider\RememberMeServiceProvider;
 use Silex\Provider\SecurityServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Silex\Provider\SessionServiceProvider;
@@ -56,14 +57,18 @@ $app->register(new SecurityServiceProvider(), array(
                 'password_parameter' => 'form[password]',
             ),
             'logout'    => true,
-            //'anonymous' => true,
-            //'users'     => $app['security.users'],
+            'remember_me' => array(
+                'key'                => 'f49fn47gd3jjg94mrff',
+                'always_remember_me' => true,
+                'remember_me_parameter' => 'form[remember_me]'
+            ),
             'users' => $app->share(function() use ($app) {
                     return new UserRepository($app['em'], $app['em']->getClassMetadata('Model\Entities\User'));
-                }),
+            }),
         ),
     ),
 ));
+$app->register(new RememberMeServiceProvider());
 
 $app['security.encoder.digest'] = $app->share(function ($app) {
     return new PlaintextPasswordEncoder();
