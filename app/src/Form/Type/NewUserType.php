@@ -13,7 +13,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class UserType extends AbstractType {
+class NewUserType extends AbstractType {
 
     /**
      * {@inheritdoc}
@@ -21,9 +21,7 @@ class UserType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username', 'text', array(
-                'disabled' => true
-            ))
+            ->add('username')
             ->add('password', 'repeated', array(
                 'type'           => 'password',
                 'invalid_message' => 'The password fields must match.',

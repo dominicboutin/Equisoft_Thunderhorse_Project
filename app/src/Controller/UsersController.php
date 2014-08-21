@@ -2,6 +2,7 @@
 
 namespace Controller
 {
+    use Form\Type\NewUserType;
     use Form\Type\UserType;
     use Model\Entities\User;
     use Silex\Application;
@@ -74,7 +75,7 @@ namespace Controller
         public function new_user( Application $app )
         {
             $user = new User();
-            $builder = $app['form.factory']->createBuilder(new UserType(), $user);
+            $builder = $app['form.factory']->createBuilder(new NewUserType(), $user);
 
             $form = $builder->getForm();
 
