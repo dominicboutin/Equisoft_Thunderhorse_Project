@@ -166,9 +166,10 @@ vcsrepo { '/srv/ciin':
   revision => 'develop'
 }
 
-exec { 'project-install':
-  command     => 'sudo -u vagrant /usr/local/bin/composer --prefer-source -n -q  install',
+exec { 'composer-install':
+  command     => 'sudo -u vagrant /usr/local/bin/composer --prefer-source -n -q -o install',
   cwd         => '/srv/ciin/app',
+  timeout     => 900,
   require     => [ Class['composer'], Vcsrepo['/srv/ciin'] ],
 }
 
