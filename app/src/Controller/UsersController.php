@@ -2,6 +2,7 @@
 
 namespace Controller
 {
+    use Form\Model\NewUser;
     use Form\Type\NewUserType;
     use Form\Type\UserType;
     use Model\Entities\User;
@@ -74,8 +75,8 @@ namespace Controller
 
         public function new_user( Application $app )
         {
-            $user = new User();
-            $builder = $app['form.factory']->createBuilder(new NewUserType(), $user);
+            $newUser = new NewUser();
+            $builder = $app['form.factory']->createBuilder(new NewUserType(), $newUser);
 
             $form = $builder->getForm();
 
@@ -84,6 +85,7 @@ namespace Controller
             $form->handleRequest($request);
             if ($form->isSubmitted()) {
                 if ($form->isValid()) {
+                    $user = $newUser->getUser();
                     $app['em']->persist($user);
                     $app['em']->flush();
                     $app['session']->getFlashBag()->add('success', 'User was created');

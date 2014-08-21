@@ -11,7 +11,6 @@ namespace Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class NewUserType extends AbstractType {
 
@@ -21,33 +20,13 @@ class NewUserType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username')
-            ->add('password', 'repeated', array(
-                'type'           => 'password',
-                'invalid_message' => 'The password fields must match.',
-                'required'       => true,
-                'first_options'  => array('label' => 'Password'),
-                'second_options' => array('label' => 'Repeat Password'),
-                'constraints' => array(
-                    new NotBlank(),
-                ),
-            ))
-            ->add('roles', 'entity', array(
-                'class'    => 'Model\Entities\Role',
-                'property' => 'name',
-                'expanded' => TRUE,
-                'multiple' => TRUE
-            ))
-            ->add('firstName')
-            ->add('lastName')
-            ->add('email')
-            ->add('submit', 'submit');
+            ->add('user', new UserType());
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Model\Entities\User',
+            'data_class' => 'Form\Model\NewUser',
         ));
     }
 
