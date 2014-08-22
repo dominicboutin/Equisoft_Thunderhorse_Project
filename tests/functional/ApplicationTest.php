@@ -7,6 +7,16 @@ class ApplicationTest extends WebTestCase
 {
     public function createApplication()
     {
+        define( 'PATH_ROOT', dirname( __DIR__ ) . '/../..');
+        define( 'PATH_SRC', PATH_ROOT . '/src' );
+        define( 'PATH_RSC', PATH_ROOT . '/resources' );
+
+        define( 'PATH_CACHE', PATH_RSC . '/cache' );
+        define( 'PATH_LOCALES', PATH_RSC . '/locales' );
+
+        define( 'PATH_PUBLIC', PATH_ROOT . '/web' );
+        define( 'PATH_VENDOR', PATH_ROOT  );
+
         // Silex
         $app = new Application();
         require __DIR__.'/../../resources/config/test.php';
