@@ -78,13 +78,13 @@ $app->register(new TranslationServiceProvider());
 $app['translator'] = $app->share($app->extend('translator', function ($translator, $app) {
     $translator->addLoader('yaml', new YamlFileLoader());
 
-    $translator->addResource('yaml', PATH_ROOT.'/resources/locales/fr.yml', 'fr');
+    $translator->addResource('yaml', __DIR__.'/../resources/locales/fr.yml', 'fr');
 
     return $translator;
 }));
 
 $app->register(new MonologServiceProvider(), array(
-    'monolog.logfile' => PATH_ROOT.'/resources/log/app.log',
+    'monolog.logfile' => __DIR__.'/../resources/log/app.log',
     'monolog.name'    => 'app',
     'monolog.level'   => 300 // = Logger::WARNING
 ));
@@ -95,7 +95,7 @@ $app->register(new TwigServiceProvider(), array(
         'strict_variables' => true
     ),
     'twig.form.templates' => array('form_div_layout.html.twig', 'common/form_div_layout.html.twig'),
-    'twig.path'           => array(PATH_ROOT . '/resources/views')
+    'twig.path'           => array(__DIR__ . '/../resources/views')
 ));
 
 if ($app['debug'] && isset($app['cache.path'])) {
@@ -160,6 +160,6 @@ $app['em'] = $app->share(function ($app) {
     return EntityManager::create($app['db.options'], $config);
 });
 
-require PATH_SRC . '/routes.php';
+require __DIR__ . '/routes.php';
 
 return $app;
