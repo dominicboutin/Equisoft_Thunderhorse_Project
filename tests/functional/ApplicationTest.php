@@ -10,12 +10,12 @@ class ApplicationTest extends WebTestCase
         // Silex
         $app = new Application();
         require __DIR__.'/../../resources/config/test.php';
-        require __DIR__ . '/../../resources/app.php';
+        require __DIR__ . '/../../src/app.php';
 
         $app['session.test'] = true;
 
         // Controllers
-        require __DIR__ . '/../../resources/controllers.php';
+        require __DIR__ . '/../../src/controllers.php';
 
         return $this->app = $app;
     }

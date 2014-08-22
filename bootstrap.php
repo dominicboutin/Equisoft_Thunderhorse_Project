@@ -6,27 +6,9 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
-
 require_once __DIR__ ."/vendor/autoload.php";
 
 require PATH_RSC.'/config/dev.php';
-
-// add model here
-$paths = array(
-    PATH_SRC.'/Model'
-);
-
-$isDevMode = false;
-$config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
-
-$params = $app['db.options'];
-/*
-$params = array(
-    'driver'  => 'pdo_mysql',
-    'user'   => 'devuser',
-    'password' => 'devuser',
-    'dbname'  => 'test',
-);*/
 
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 
