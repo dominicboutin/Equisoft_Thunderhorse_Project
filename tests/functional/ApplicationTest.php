@@ -7,7 +7,7 @@ class ApplicationTest extends WebTestCase
 {
     public function createApplication()
     {
-        define( 'PATH_ROOT', dirname( __DIR__ ) . '/../..');
+        define( 'PATH_ROOT', dirname( __DIR__ ) . '/..');
         define( 'PATH_SRC', PATH_ROOT . '/src' );
         define( 'PATH_RSC', PATH_ROOT . '/resources' );
 
